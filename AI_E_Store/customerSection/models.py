@@ -3,7 +3,7 @@ from django.db import models
 # Create your models here.
 
 class Customer(models.Model):
-    CustomerID = models.IntegerField(primary_key=True)
+    CustomerID = models.AutoField(primary_key=True)
     Firstname = models.CharField(max_length=32)
     Surname = models.CharField(max_length=32)
     Email = models.EmailField(max_length=64)
@@ -13,10 +13,10 @@ class Customer(models.Model):
     Title = models.CharField(max_length=4)
     DateOfBirth = models.DateField()
     DateJoined = models.DateField()
-    IsActivated = models.BooleanField()
+    IsActivated = models.BooleanField(default=False)
 
 class Item(models.Model):
-    ItemID = models.IntegerField(primary_key=True)
+    ItemID = models.AutoField(primary_key=True)
     Title = models.CharField(max_length=32)
     Description = models.CharField(max_length=256)
     Price = models.DecimalField(max_digits=6, decimal_places=2)

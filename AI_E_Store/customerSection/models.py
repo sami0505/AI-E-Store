@@ -49,9 +49,9 @@ class Order(models.Model):
     IsShipped = models.BooleanField(default=False)
     Postcode = models.CharField(max_length=7)
     AddressLine1 = models.CharField(max_length=35)
-    AddressLine2 = models.CharField(max_length=35)
+    AddressLine2 = models.CharField(max_length=35, null=True)
     City = models.CharField(max_length=26)
-    County = models.CharField(max_length=26)
+    County = models.CharField(max_length=26, null=True)
 
 class OrderLine(models.Model):
     OrderLineID = models.AutoField(primary_key=True)

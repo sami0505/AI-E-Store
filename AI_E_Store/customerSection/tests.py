@@ -1,5 +1,5 @@
 from django.test import TestCase
-from customerSection.models import Customer, Item, Review
+from customerSection.models import Customer, Item, Review, Order
 import datetime
 import unittest
 # Create your tests here.
@@ -93,3 +93,29 @@ class unit_1_1_Tests(TestCase):
             newCustomer.DateJoined = 9
             newCustomer.save()
             self.fail(f"The test failed because an error should have occured!")
+            
+    def test_1_5_1(self):
+        """ This is test 1.5.1 """
+        try:
+            newCustomer = Customer()
+            newCustomer.Firstname = "John"
+            newCustomer.Surname = "Doe"
+            newCustomer.Email = "foo.bar@doemail.org"
+            newCustomer.Telephone = "05555555555"
+            newCustomer.Username = "johnDoe.01"
+            newCustomer.Password = "1@2B3c4."
+            newCustomer.Title = "Mr"
+            newCustomer.DateOfBirth = datetime.date(1970, 1, 1)
+            newCustomer.DateJoined = datetime.date.today()
+            newCustomer.save()
+
+            newOrder = Order()
+            newOrder.CustomerID = newCustomer
+            newOrder.DateOfSale = datetime.date.today()
+            newOrder.PaymentMethod = "Debit Card"
+            newOrder.Postcode = "SW1A2AA"
+            newOrder.AddressLine1 = "10 Downing St"
+            newOrder.City = "London"
+            newOrder.save()
+        except Exception as error:
+            self.fail(f"The test failed because an error occured: {error}")

@@ -22,9 +22,38 @@ class Item(models.Model):
     Price = models.DecimalField(max_digits=6, decimal_places=2)
     Category = models.CharField(max_length=20)
 
+class ItemInstance(models.Model):
+    ItemInstanceID = models.AutoField(primary_key=True)
+    ItemID = models.ForeignKey("Item", on_delete=models.CASCADE, db_column="")
+    Size = models.CharField(max_length=3)
+    Colour = models.CharField(max_length=16)
+    Quantity = models.SmallIntegerField()
+    AmountSold = models.IntegerField()
+    IsPublic = models.BooleanField()
+    HighResImg = models.ImageField(width_field=1080, height_field=1080)
+    LowResImg = models.ImageField(width_field=256, height_field=256)
+    QBR = models.DecimalField(max_digits=3, decimal_places=2)
+
 class Review(models.Model):
-    ReviewID = models.IntegerField(primary_key=True)
-    CustomerID = models.ForeignKey('Customer', on_delete=models.CASCADE)
-    ItemID = models.ForeignKey('Item', on_delete=models.CASCADE)
+    ReviewID = models.AutoField(primary_key=True)
+    CustomerID = models.ForeignKey("Customer", on_delete=models.CASCADE, db_column="")
+    ItemID = models.ForeignKey("Item", on_delete=models.CASCADE, db_column="")
     Comment = models.CharField(max_length=256)
-    StarRating = models.IntegerField()
+    StarRating = models.SmallIntegerField()
+
+class Order(models.Model):
+    OrderID = models.AutoField(primary_key=True)
+    CustomerID = models.ForeignKey("Customer", on_delete=models.CASCADE, db_column="")
+    DateOfSale = models.DateField()
+    PaymentMethod = models.CharField(max_length=32)
+    IsShipped = models.BooleanField(default=False)
+    Postcode = models.CharField(max_length=7)
+    AddressLine1 = models.CharField(max_length=35)
+    AddressLine2 = models.CharField(max_length=35)
+    City = models.CharField(max_length=26)
+    County = models.CharField(max_length=26)
+
+class OrderLine(models.Model):
+    OrderLineID = models.AutoField(primary_key=True)
+    ItemInstanceID = models.ForeignKey("ItemInstance", on_delete=models.CASCADE, db_column="")
+    Quantity = models.SmallIntegerField

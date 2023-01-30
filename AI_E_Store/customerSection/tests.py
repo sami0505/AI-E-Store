@@ -123,7 +123,7 @@ class unit_1_5_Tests(TestCase):
 
 class unit_1_6_Tests(TestCase):
     def setUp(self):
-        """ This defines a consistent record!"""
+        """ This defines a consistent record! """
         self.newCustomer = Customer()
         self.newCustomer.Firstname = "John"
         self.newCustomer.Surname = "Doe"
@@ -134,7 +134,20 @@ class unit_1_6_Tests(TestCase):
         self.newCustomer.Title = "Mr"
         self.newCustomer.DateOfBirth = datetime.date(1970, 1, 1)
         self.newCustomer.DateJoined = datetime.date.today()
+        
+        self.newCustomer1 = Customer()
+        self.newCustomer1.Firstname = "Jane"
+        self.newCustomer1.Surname = "Doe"
+        self.newCustomer1.Email = "bar.foo@doemail.org"
+        self.newCustomer1.Telephone = "06666666666"
+        self.newCustomer1.Username = "janeDoe.01"
+        self.newCustomer1.Password = "1234"
+        self.newCustomer1.Title = "Mrs"
+        self.newCustomer1.DateOfBirth = datetime.date(1970, 1, 1)
+        self.newCustomer1.DateJoined = datetime.date.today()
+        
         self.newCustomer.save()
+        self.newCustomer1.save()
         return super().setUp()
 
     def test_1_6_1(self):
@@ -145,30 +158,50 @@ class unit_1_6_Tests(TestCase):
     
     def test_1_6_2(self):
         """ This is test 1.6.2 """
-        readCustomer = (Customer.objects.filter(Username = "johnDoe.01"))
-        # errorMessage = "The value retrieved and the value in the database are not the same!"
-        # self.assertEqual(self.newCustomer, readCustomer, errorMessage)
+        readCustomers = Customer.objects.filter(DateOfBirth = datetime.date(1970, 1, 1))
+        errorMessage = "The number of objects that fit query are inaccurate!"
+        self.assertEqual(len(readCustomers), 2, errorMessage)
     
     def test_1_6_3(self):
         """ This is test 1.6.3 """
-    
+        readCustomer = Customer.objects.filter(DateOfBirth = datetime.date(1970, 2, 2))
+        errorMessage = "A non existent user was found! That's wrong!"
+        self.assertEqual(len(readCustomer), 0, errorMessage)
+
     def test_1_6_4(self):
         """ This is test 1.6.4 """
+        readCustomers = Customer.objects.filter()
+        self.assertEqual(len(readCustomers), 2, "Not all records were found!")
 
     def test_1_6_5(self):
         """ This is test 1.6.5 """
-    
+        readCustomer = Customer.objects.get(pk=13)
+        readCustomer.IsActivated = True
+        readCustomer.save()
+        errorMessage = "The operation did not impact the correct record!"
+        self.assertEqual(Customer.objects.get(pk=13).IsActivated, True, errorMessage)
+
     def test_1_6_6(self):
         """ This is test 1.6.6 """
-    
-    def test_1_6_7(self):
-        """ This is test 1.6.7 """
-    
+        with self.assertRaises(Exception):
+            readCustomer = Customer.objects.get(pk=9999)
+            readCustomer.IsActivated = True
+            readCustomer.save()
+            self.fail("A non existent user was written to successfully. That's wrong!")
+
     def test_1_6_8(self):
         """ This is test 1.6.8 """
-    
+        readCustomers = Customer.objects.filter(DateOfBirth = datetime.date(1970, 1, 1))
+        deleteCustomer = readCustomers[1] # Jane Doe
+        CustomerID = deleteCustomer.pk
+        deleteCustomer.delete()
+        with self.assertRaises(Customer.DoesNotExist): 
+            Customer.objects.get(pk=CustomerID)
+
     def test_1_6_9(self):
         """ This is test 1.6.9 """
+        with self.assertRaises(Exception):
+            readCustomer = Customer.objects.get(pk=9999)
+            readCustomer.delete()
+            self.fail("A non existent user was deleted successfully. That's wrong!")
 
-    def test_1_6_10(self):
-        """ This is test 1.6.10 """

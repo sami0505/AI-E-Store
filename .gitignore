@@ -1,3 +1,4 @@
+*.pyc
+AI_E_Store/.vscode/settings.json
+AI_E_Store/AI_E_Store/__pycache__/
 
-*.pyc
-*.pyc

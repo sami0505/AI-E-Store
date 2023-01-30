@@ -66,8 +66,8 @@ class unit_1_1_Tests(TestCase):
             newCustomer.Username = "johnDoe.01"
             newCustomer.Password = "1@2B3c4."
             newCustomer.Title = "Mr"
-            newCustomer.DateOfBirth = datetime.date(0, 1, 1)
-            newCustomer.DateJoined = datetime.date(0, 1, 1)
+            newCustomer.DateOfBirth = datetime.date(999, 1, 1)
+            newCustomer.DateJoined = datetime.date(999, 1, 1)
             newCustomer.save()
             self.fail(f"The test failed because an error should have occured!")
     
@@ -93,7 +93,8 @@ class unit_1_1_Tests(TestCase):
             newCustomer.DateJoined = 9
             newCustomer.save()
             self.fail(f"The test failed because an error should have occured!")
-            
+
+class unit_1_5_Tests(TestCase):
     def test_1_5_1(self):
         """ This is test 1.5.1 """
         try:
@@ -119,3 +120,55 @@ class unit_1_1_Tests(TestCase):
             newOrder.save()
         except Exception as error:
             self.fail(f"The test failed because an error occured: {error}")
+
+class unit_1_6_Tests(TestCase):
+    def setUp(self):
+        """ This defines a consistent record!"""
+        self.newCustomer = Customer()
+        self.newCustomer.Firstname = "John"
+        self.newCustomer.Surname = "Doe"
+        self.newCustomer.Email = "foo.bar@doemail.org"
+        self.newCustomer.Telephone = "05555555555"
+        self.newCustomer.Username = "johnDoe.01"
+        self.newCustomer.Password = "1@2B3c4."
+        self.newCustomer.Title = "Mr"
+        self.newCustomer.DateOfBirth = datetime.date(1970, 1, 1)
+        self.newCustomer.DateJoined = datetime.date.today()
+        self.newCustomer.save()
+        return super().setUp()
+
+    def test_1_6_1(self):
+        """ This is test 1.6.1 """
+        readCustomer = (Customer.objects.filter(Username = "johnDoe.01"))[0]
+        errorMessage = "The value retrieved and the value in the database are not the same!"
+        self.assertEqual(self.newCustomer, readCustomer, errorMessage)
+    
+    def test_1_6_2(self):
+        """ This is test 1.6.2 """
+        readCustomer = (Customer.objects.filter(Username = "johnDoe.01"))
+        # errorMessage = "The value retrieved and the value in the database are not the same!"
+        # self.assertEqual(self.newCustomer, readCustomer, errorMessage)
+    
+    def test_1_6_3(self):
+        """ This is test 1.6.3 """
+    
+    def test_1_6_4(self):
+        """ This is test 1.6.4 """
+
+    def test_1_6_5(self):
+        """ This is test 1.6.5 """
+    
+    def test_1_6_6(self):
+        """ This is test 1.6.6 """
+    
+    def test_1_6_7(self):
+        """ This is test 1.6.7 """
+    
+    def test_1_6_8(self):
+        """ This is test 1.6.8 """
+    
+    def test_1_6_9(self):
+        """ This is test 1.6.9 """
+
+    def test_1_6_10(self):
+        """ This is test 1.6.10 """

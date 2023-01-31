@@ -12,7 +12,9 @@ def index(request):
 def register(request):
     if request.method == "POST":
         form = request.POST
-        registerAccount(form)
+        error = registerAccount(form)
+        if error != None:
+            print(f"An Error occurred: {error}")
         return redirect("/") # Redirects back to index
     else:
         form = Register()

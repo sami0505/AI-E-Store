@@ -19,5 +19,6 @@ from customerSection import views
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('registration/', views.register, name='registration'),
     path('admin/', admin.site.urls),
 ]

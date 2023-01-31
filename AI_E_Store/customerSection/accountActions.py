@@ -1,4 +1,4 @@
-def registerAccount():
+def registerAccount(form):
     status = True
     try:
         pass

@@ -1,7 +1,17 @@
 from django import forms
 
+# This defines the dropdown
+# first value is actual value
+# second value is the one shown to the user
+titleChoices = [
+        ("mr" , "Mr"),
+        ("mrs" , "Mrs"),
+        ("ms" , "Ms"),
+        ("lord" , "Lord"),
+        ("large" , "Large") # Large is INVALID input
+        ] 
+
 class Register(forms.Form):
-    titleChoices = ["Mr", "Mrs", "Ms", "Lord", "Large"] # Large is INVALID input
     # This results in a dropdown instead of an input box
     Title = forms.CharField(label="Title:", widget = forms.Select(choices=titleChoices) )
     

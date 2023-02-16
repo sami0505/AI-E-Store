@@ -32,7 +32,7 @@ class ItemInstance(models.Model):
     IsPublic = models.BooleanField(blank=False)
     HighResImg = models.ImageField(width_field=1080, height_field=1080, blank=False)
     LowResImg = models.ImageField(width_field=256, height_field=256, blank=False)
-    QBR = models.DecimalField(max_digits=3, decimal_places=2, blank=False)
+    QBR = models.DecimalField(default=-1.0 , max_digits=3, decimal_places=2, blank=False)
 
 class Review(models.Model):
     ReviewID = models.AutoField(primary_key=True, blank=False)

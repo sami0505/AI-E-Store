@@ -20,3 +20,9 @@ def register(request):
         form = Register()
         context = {"form": form}
         return render(request, "registration.html", context)
+
+def verification(request):
+    if request.method == "POST":
+        pass
+    else:
+        pass

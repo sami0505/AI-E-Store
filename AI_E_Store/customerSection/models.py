@@ -1,18 +1,28 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
+from django.utils import timezone
 
 
 # The Customer is the default user model, capable of ordering items, logging in etc.
-class Customer(AbstractUser):
+class Customer(AbstractBaseUser, PermissionsMixin):
+    CustomerID = models.AutoField(primary_key=True)
+    username = models.CharField(max_length=16, blank=False, unique=True)  # **
     Firstname = models.CharField(max_length=32, blank=False)
     Surname = models.CharField(max_length=32, blank=False)
-    EmailAddress = models.EmailField(max_length=64, blank=False)
+    email = models.EmailField(max_length=64, blank=False)  # **
     Telephone = models.CharField(max_length=32, blank=False)
     Title = models.CharField(max_length=4, blank=False)
     DateOfBirth = models.DateField(blank=False)
-    DateJoined = models.DateField(blank=False)
-    REQUIRED_FIELDS = ["Firstname", "Surname", "EmailAddress", "Telephone",
+    date_joined = models.DateTimeField(blank=False, default=timezone.now)  # **
+    is_staff = models.BooleanField(default=False)  # **
+    is_active = models.BooleanField(default=False)  # **
+    is_superuser = models.BooleanField(default=False)  # **
+    objects = UserManager()
+    USERNAME_FIELD = "username"
+    EMAIL_FIELD = "email"
+    REQUIRED_FIELDS = ["Firstname", "Surname", "Email", "Telephone",
                        "Title", "DateOfBirth", "DateJoined"]
+    # **Lowercase to keep default UserManager working
 
 
 # The Item model contains generic item info that can be applied to all instances of it

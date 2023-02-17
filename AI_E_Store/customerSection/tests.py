@@ -205,24 +205,24 @@ import unittest
 #             readCustomer = Customer.objects.get(pk=9999)
 #             readCustomer.delete()
 #             self.fail("A non existent user was deleted successfully. That's wrong!")
-
-class unit_2_Tests(TestCase):
-    def test_2_1_1(self):
-        """ This is test 2.1.1"""
-        password = b"r3allySecur3"
-        salt = b"$2b$12$Mr8cYTjur7w4gUtGG.P7Mu"
-        expectedHash = b"$2b$12$Mr8cYTjur7w4gUtGG.P7Mu6yHhhj7Vvc/ticID9PZXlY4GmCwfqRe"
-        generatedHash = bcrypt.hashpw(password, salt)
-        self.assertEqual(generatedHash, expectedHash, "The hashes do not match!")
-
-    def test_2_2_1(self):
-        """ This is test 2.2.1 """
-        password = b"r3allySecur3"
-        salt = b"$2b$12$Mr8cYTjur7w4gUtGG.P7Mu"
-        expectedHash = b"$2b$12$Mr8cYTjur7w4gUtGG.P7Mu6yHhhj7Vvc/ticID9PZXlY4GmCwfqRe"
-        generatedHash1 = bcrypt.hashpw(password, salt)
-        generatedHash2 = bcrypt.hashpw(password, salt)
-        condition1 = generatedHash1 == expectedHash
-        condition2 = generatedHash2 == expectedHash
-        if condition1 == False or condition2 == False:
-            self.fail("The hashing algorithm isn't consistent!")
+#
+# class unit_2_Tests(TestCase):
+#     def test_2_1_1(self):
+#         """ This is test 2.1.1"""
+#         password = b"r3allySecur3"
+#         salt = b"$2b$12$Mr8cYTjur7w4gUtGG.P7Mu"
+#         expectedHash = b"$2b$12$Mr8cYTjur7w4gUtGG.P7Mu6yHhhj7Vvc/ticID9PZXlY4GmCwfqRe"
+#         generatedHash = bcrypt.hashpw(password, salt)
+#         self.assertEqual(generatedHash, expectedHash, "The hashes do not match!")
+#
+#     def test_2_2_1(self):
+#         """ This is test 2.2.1 """
+#         password = b"r3allySecur3"
+#         salt = b"$2b$12$Mr8cYTjur7w4gUtGG.P7Mu"
+#         expectedHash = b"$2b$12$Mr8cYTjur7w4gUtGG.P7Mu6yHhhj7Vvc/ticID9PZXlY4GmCwfqRe"
+#         generatedHash1 = bcrypt.hashpw(password, salt)
+#         generatedHash2 = bcrypt.hashpw(password, salt)
+#         condition1 = generatedHash1 == expectedHash
+#         condition2 = generatedHash2 == expectedHash
+#         if condition1 == False or condition2 == False:
+#             self.fail("The hashing algorithm isn't consistent!")

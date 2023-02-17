@@ -1,20 +1,21 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
-# Create your models here.
 
-class Customer(models.Model):
-    CustomerID = models.AutoField(primary_key=True, blank=False)
+# The Customer is the default user model, capable of ordering items, logging in etc.
+class Customer(AbstractUser):
     Firstname = models.CharField(max_length=32, blank=False)
     Surname = models.CharField(max_length=32, blank=False)
-    Email = models.EmailField(max_length=64, blank=False)
+    EmailAddress = models.EmailField(max_length=64, blank=False)
     Telephone = models.CharField(max_length=32, blank=False)
-    Username = models.CharField(max_length=16, blank=False)
-    Password = models.CharField(max_length=60, blank=False)
     Title = models.CharField(max_length=4, blank=False)
     DateOfBirth = models.DateField(blank=False)
     DateJoined = models.DateField(blank=False)
-    IsActivated = models.BooleanField(default=False, blank=False)
+    REQUIRED_FIELDS = ["Firstname", "Surname", "EmailAddress", "Telephone",
+                       "Title", "DateOfBirth", "DateJoined"]
 
+
+# The Item model contains generic item info that can be applied to all instances of it
 class Item(models.Model):
     ItemID = models.AutoField(primary_key=True, blank=False)
     Title = models.CharField(max_length=32, blank=False)
@@ -22,6 +23,8 @@ class Item(models.Model):
     Price = models.DecimalField(max_digits=6, decimal_places=2, blank=False)
     Category = models.CharField(max_length=20, blank=False)
 
+
+# The ItemInstance model contains the highly specific info per "style" of an item. Blue, Red, Small, Big etc
 class ItemInstance(models.Model):
     ItemInstanceID = models.AutoField(primary_key=True, blank=False)
     ItemID = models.ForeignKey("Item", on_delete=models.CASCADE, db_column="", blank=False)
@@ -32,8 +35,10 @@ class ItemInstance(models.Model):
     IsPublic = models.BooleanField(blank=False)
     HighResImg = models.ImageField(width_field=1080, height_field=1080, blank=False)
     LowResImg = models.ImageField(width_field=256, height_field=256, blank=False)
-    QBR = models.DecimalField(default=-1.0 , max_digits=3, decimal_places=2, blank=False)
+    QBR = models.DecimalField(default=-1.0, max_digits=3, decimal_places=2, blank=False)
 
+
+# The Review model is a singular record of a user's review
 class Review(models.Model):
     ReviewID = models.AutoField(primary_key=True, blank=False)
     CustomerID = models.ForeignKey("Customer", on_delete=models.CASCADE, db_column="", blank=False)
@@ -41,6 +46,8 @@ class Review(models.Model):
     Comment = models.CharField(max_length=256, blank=False)
     StarRating = models.SmallIntegerField(blank=False)
 
+
+# The Order model contains the bulk of information for an order, without the items
 class Order(models.Model):
     OrderID = models.AutoField(primary_key=True)
     CustomerID = models.ForeignKey("Customer", on_delete=models.CASCADE, db_column="", blank=False)
@@ -53,6 +60,8 @@ class Order(models.Model):
     City = models.CharField(max_length=26, blank=False)
     County = models.CharField(max_length=26, null=True)
 
+
+# The OrderLine model is used to record each item ordered per Order
 class OrderLine(models.Model):
     OrderLineID = models.AutoField(primary_key=True, blank=False)
     ItemInstanceID = models.ForeignKey("ItemInstance", on_delete=models.CASCADE, db_column="", blank=False)

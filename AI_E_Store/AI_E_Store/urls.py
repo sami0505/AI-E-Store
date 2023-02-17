@@ -20,7 +20,7 @@ from customerSection import views
 urlpatterns = [
     path('', views.index, name='index'),
     path('registration/', views.register, name='registration'),
-    #path('login/', views.login, name='login'),
-    
+    # path('login/', views.login, name='login'),
+
     path('admin/', admin.site.urls),
 ]

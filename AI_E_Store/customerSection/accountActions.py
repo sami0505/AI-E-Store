@@ -1,4 +1,4 @@
-from .models import Customer
+from .models import Customer, TokenAction
 
 
 def registerAccount(form):
@@ -10,7 +10,8 @@ def registerAccount(form):
                                                   password=form["Password"], DateOfBirth=form["DateOfBirth"],
                                                   Firstname=form["Firstname"], Surname=form["Surname"],
                                                   Telephone=form["Telephone"], Title=form["Title"])
-        # TODO Activation
+        newToken = TokenAction.create(0, newAccount.pk)
+        newToken.save()
         # TODO Send Email
     except Exception as error:
         status = False

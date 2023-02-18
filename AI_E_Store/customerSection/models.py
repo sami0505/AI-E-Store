@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
 from django.utils import timezone
+from django.core.exceptions import ObjectDoesNotExist
+import random
+import string
 
 
 # The Customer is the default user model, capable of ordering items, logging in etc.
@@ -76,3 +79,41 @@ class OrderLine(models.Model):
     OrderLineID = models.AutoField(primary_key=True, blank=False)
     ItemInstanceID = models.ForeignKey("ItemInstance", on_delete=models.CASCADE, db_column="", blank=False)
     Quantity = models.SmallIntegerField(blank=False)
+
+
+# This function is used to generate a random token for TokenAction
+def generateToken():
+    charset = string.ascii_letters  # Use random ASCII letters
+    while True:  # Keeps generating random tokens until..
+        token = ''.join(random.choice(charset) for i in range(15))
+        try:
+            TokenAction.objects.get(pk=token)  # get() will return an error if the token is unique
+        except ObjectDoesNotExist:
+            break  # The loop breaks because it is a unique token
+    return token
+
+
+# The TokenAction model contains a record between a token and what action should follow
+class TokenAction(models.Model):
+    Token = models.CharField(primary_key=True, max_length=15, default=generateToken)
+    Reason = models.PositiveSmallIntegerField(blank=False)  # The reason field generates the action
+    Action = models.CharField(max_length=255, blank=False)
+
+    # create() is TokenAction's constructor. Based on reason's value, an action is made according to the userid
+    @classmethod
+    def create(cls, reason, userid):
+        if reason == 0:  # Account Creation
+            action = f"Customer.objects.filter(CustomerID={userid}).update(is_active=True)"
+        elif reason == 1:  # Password Reset
+            # TODO add the password reset function
+            pass
+        elif reason == 2:  # Account Deletion
+            action = f"Customer.objects.get(pk={userid}).delete()"
+        else:  # Invalid reason
+            raise Exception("Error: Invalid reason value given!")
+        return cls(Reason=reason, Action=action)  # The model is created and returned
+
+    # This function returns the url with the given token
+    def getURL(self):
+        # TODO replace with domain name when switching to new domain
+        return f"http://127.0.0.1:8000/verification/{self.Token}/"

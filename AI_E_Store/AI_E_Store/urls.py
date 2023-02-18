@@ -21,7 +21,8 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('registration/', views.register, name='registration'),
     path('verification/<str:token>/', views.verification, name='verification'),
-    # path('login/', views.login, name='login'),
+    path('login/', views.login, name='login'),
+    path('logout/', views.attempt_logout, name='logout'),
 
     path('admin/', admin.site.urls),
 ]

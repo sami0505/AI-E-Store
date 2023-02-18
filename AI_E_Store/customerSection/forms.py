@@ -22,3 +22,8 @@ class Register(forms.Form):
     Username = forms.CharField(max_length=16)
     Password = forms.CharField(max_length=60)
     DateOfBirth = forms.DateField(label="Date Of Birth:")
+
+
+class Login(forms.Form):
+    Username = forms.CharField(max_length=16)
+    Password = forms.CharField(max_length=60)

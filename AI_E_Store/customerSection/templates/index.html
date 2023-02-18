@@ -1,8 +1,14 @@
 <!DOCTYPE html>
 <html>
     <body>
-        <h1>Hello World!</h1>
-        <p>Welcome to my first Django project!</p>
-        <a href="/registration/">REGISTER</a>
+        {% if user.is_authenticated %}
+            <h1>You are logged in</h1>
+            <a href="/logout/">LOG OUT</a>
+        {% else %}
+            <h1>Hello World!</h1>
+            <a href="/registration/">REGISTER</a>
+            <a href="/login/">LOG IN</a>
+        {% endif %}
     </body>
 </html>
+

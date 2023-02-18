@@ -102,6 +102,7 @@ class TokenAction(models.Model):
     # create() is TokenAction's constructor. Based on reason's value, an action is made according to the userid
     @classmethod
     def create(cls, reason, userid):
+        # TODO set up token expiration
         if reason == 0:  # Account Creation
             action = f"Customer.objects.filter(CustomerID={userid}).update(is_active=True)"
         elif reason == 1:  # Password Reset

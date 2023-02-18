@@ -1,29 +1,60 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.template import loader
-from .forms import Register
+from django.contrib.auth import authenticate, logout
+from .forms import Register, Login
 from .accountActions import registerAccount
 from .models import TokenAction, Customer
 
 
 def index(request):
-    context = {}
+    context = {"user": request.user}  # FIXME the logged in doesn't show
     return render(request, "index.html", context)
 
 
 def register(request):
     if request.method == "POST":
         # The form is contained in the POST
-        form = request.POST
-        error = registerAccount(form)  # TODO add proper responses to errors
-        if error is not None:
-            print(f"An Error occurred: {error}")
+        form = Register(request.POST)
+        if form.is_valid():
+            # The form is valid
+            error = registerAccount(form.cleaned_data)  # TODO add proper responses to errors
+            if error is not None:
+                print(f"An Error occurred: {error}")
+        else:
+            # The form is invalid
+            print("An Error occurred: Invalid Form")
         return redirect("/")  # Redirects back to index
     else:
         # Create a form and add it to the context Dict
         form = Register()
         context = {"form": form}
         return render(request, "registration.html", context)
+
+
+def login(request):
+    if request.method == "POST":
+        form = Login(request.POST)
+        if form.is_valid():
+            try:
+                authenticate(username=form.cleaned_data["Username"], password=form.cleaned_data["Password"])
+            except Exception as error:
+                print(f"An Error occurred: {error}")
+                return redirect("/login/")
+            else:
+                return redirect("/")
+        else:
+            print("An Error occurred: Invalid Form")
+            return redirect("/login/")
+    else:
+        form = Login()
+        context = {"form": form}
+        return render(request, "login.html", context)
+
+
+def attempt_logout(request):
+    logout(request)
+    return redirect("/")
 
 
 def verification(request, token):

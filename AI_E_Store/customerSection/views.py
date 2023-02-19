@@ -1,14 +1,14 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.template import loader
-from django.contrib.auth import authenticate, logout
+from django.contrib.auth import authenticate, logout, login
 from .forms import Register, Login
 from .accountActions import registerAccount
 from .models import TokenAction, Customer
 
 
 def index(request):
-    context = {"user": request.user}  # FIXME the logged in doesn't show
+    context = {"user": request.user}
     return render(request, "index.html", context)
 
 
@@ -32,21 +32,25 @@ def register(request):
         return render(request, "registration.html", context)
 
 
-def login(request):
-    if request.method == "POST":
+def attempt_login(request):
+    if request.method == "POST":  # POST Request
         form = Login(request.POST)
-        if form.is_valid():
-            try:
-                authenticate(username=form.cleaned_data["Username"], password=form.cleaned_data["Password"])
-            except Exception as error:
+        if form.is_valid():  # Form is valid
+            try:  # Attempt Login
+                user = authenticate(username=form.cleaned_data["Username"], password=form.cleaned_data["Password"])
+                if user is not None:  # Correct Credentials
+                    login(request, user)
+                    return redirect("/")
+                else:  # Wrong Credentials
+                    raise Exception("Invalid Login Credentials!")
+
+            except Exception as error:  # Something went wrong during login
                 print(f"An Error occurred: {error}")
                 return redirect("/login/")
-            else:
-                return redirect("/")
-        else:
+        else:  # Form is invalid
             print("An Error occurred: Invalid Form")
             return redirect("/login/")
-    else:
+    else:  # GET Request
         form = Login()
         context = {"form": form}
         return render(request, "login.html", context)

@@ -23,6 +23,7 @@ urlpatterns = [
     path('verification/<str:token>/', views.verification, name='verification'),
     path('login/', views.attempt_login, name='login'),
     path('logout/', views.attempt_logout, name='logout'),
+    path('deletion/', views.deletion, name='deletion'),
 
     path('admin/', admin.site.urls),
 ]

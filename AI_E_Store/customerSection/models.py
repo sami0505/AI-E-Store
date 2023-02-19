@@ -12,7 +12,7 @@ class Customer(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=16, blank=False, unique=True)  # **
     Firstname = models.CharField(max_length=32, blank=False)
     Surname = models.CharField(max_length=32, blank=False)
-    email = models.EmailField(max_length=64, blank=False)  # **
+    email = models.EmailField(max_length=64, blank=False, unique=True)  # **
     Telephone = models.CharField(max_length=32, blank=False)
     Title = models.CharField(max_length=4, blank=False)
     DateOfBirth = models.DateField(blank=False)
@@ -102,6 +102,10 @@ class TokenAction(models.Model):
     # create() is TokenAction's constructor. Based on reason's value, an action is made according to the userid
     @classmethod
     def create(cls, reason, userid):
+        """ Reasons:
+            0: Account Creation
+            1: Password Reset
+            2: Account Deletion """
         # TODO set up token expiration
         if reason == 0:  # Account Creation
             action = f"Customer.objects.filter(CustomerID={userid}).update(is_active=True)"

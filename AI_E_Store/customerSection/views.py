@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponseNotFound
 from django.template import loader
 from django.contrib.auth import authenticate, logout, login
 from django.contrib import messages
@@ -76,6 +76,18 @@ def attempt_login(request):
 def attempt_logout(request):
     logout(request)
     return redirect("/")
+
+
+def deletion(request):
+    if request.user.is_authenticated:
+        # Go through with token creation
+        newToken = TokenAction.create(2, request.user.CustomerID)
+        newToken.save()
+        messages.info(request, "The link to delete your account should be in your emails.")
+        # TODO email functionality
+        return redirect("/")
+    else:
+        return HttpResponseNotFound("")  # 404 Error
 
 
 def verification(request, token):

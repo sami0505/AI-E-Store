@@ -4,7 +4,7 @@ from django.template import loader
 from django.contrib.auth import authenticate, logout, login
 from .forms import Register, Login
 from .accountActions import registerAccount
-from .models import TokenAction, Customer
+from .models import TokenAction, Customer  # Customer is used with TokenAction
 
 
 def index(request):
@@ -42,7 +42,8 @@ def attempt_login(request):
                     login(request, user)
                     return redirect("/")
                 else:  # Wrong Credentials
-                    raise Exception("Invalid Login Credentials!")
+                    # TODO add proper error responses
+                    raise Exception("Authentication Failed!")
 
             except Exception as error:  # Something went wrong during login
                 print(f"An Error occurred: {error}")

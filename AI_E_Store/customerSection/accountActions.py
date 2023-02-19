@@ -13,7 +13,6 @@ def registerAccount(form):
         newToken = TokenAction.create(0, newAccount.pk)
         newToken.save()
         # TODO Send Email
-        # TODO Respond
     except Exception as error:
         status = False
         # TODO Log error

@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.template import loader
 from django.contrib.auth import authenticate, logout, login
+from django.contrib import messages
 from .forms import Register, Login
 from .accountActions import registerAccount
 from .models import TokenAction, Customer  # Customer is used with TokenAction
@@ -14,15 +15,19 @@ def index(request):
 
 def register(request):
     if request.method == "POST":
-        # The form is contained in the POST
+        # The submission is contained in the POST
         form = Register(request.POST)
         if form.is_valid():
             # The form is valid
-            error = registerAccount(form.cleaned_data)  # TODO add proper responses to errors
-            if error is not None:
+            error = registerAccount(form.cleaned_data)
+            if error is None:
+                messages.success(request, "Registration successful. Check your email.")
+            else:
+                messages.error(request, "There was a problem with your registration. Try again.")
                 print(f"An Error occurred: {error}")
         else:
             # The form is invalid
+            messages.error(request, "There was a problem with your registration. Try again.")
             print("An Error occurred: Invalid Form")
         return redirect("/")  # Redirects back to index
     else:
@@ -34,23 +39,34 @@ def register(request):
 
 def attempt_login(request):
     if request.method == "POST":  # POST Request
+        status = True
+        userID = None  # Used for logs
         form = Login(request.POST)
+
+        # Form processing
         if form.is_valid():  # Form is valid
-            try:  # Attempt Login
+            try:
                 user = authenticate(username=form.cleaned_data["Username"], password=form.cleaned_data["Password"])
                 if user is not None:  # Correct Credentials
                     login(request, user)
-                    return redirect("/")
-                else:  # Wrong Credentials
-                    # TODO add proper error responses
+                    userID = user.CustomerID
+                else:  # Authentication Error
                     raise Exception("Authentication Failed!")
-
             except Exception as error:  # Something went wrong during login
+                status = False
                 print(f"An Error occurred: {error}")
-                return redirect("/login/")
         else:  # Form is invalid
+            status = False
             print("An Error occurred: Invalid Form")
+
+        # Status handling
+        if status:
+            return redirect("/")
+        else:
+            messages.error(request, "An error occurred with the login. Make sure your credentials are " +
+                           "correct and that your account is activated. Otherwise, try later.")
             return redirect("/login/")
+        # TODO Logging
     else:  # GET Request
         form = Login()
         context = {"form": form}

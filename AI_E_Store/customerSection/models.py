@@ -121,11 +121,15 @@ class TokenAction(models.Model):
     def getURL(self):
         # TODO replace with domain name when switching to new domain
         return f"http://127.0.0.1:8000/verification/{self.Token}/"
-    
+
     def getResetUserID(self):
-        # TODO Comment this black magic properly
+        # The userID can be acquired by removing the sides of the action
         if self.Reason == 1:
             userID = self.Action[24:-14]
             return userID
-        else:
+        else:  # Wrong reason
             return -1
+
+    def logAction(self):
+        # TODO add logs
+        pass

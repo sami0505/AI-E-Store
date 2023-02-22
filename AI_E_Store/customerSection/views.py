@@ -38,25 +38,31 @@ def register(request):
 
 
 # This view handles requests to reset passwords, not the reset itself
-def request_reset(request):  # TODO Refactor pass reset with status
+def request_reset(request):
     if request.method == "POST":
+        status = True
         form = ResetRequest(request.POST)
         if form.is_valid():
+            # Check if account exists
             userEmail = form.cleaned_data["Email"]
             refAccount = Customer.objects.all().filter(email=userEmail)
-            if refAccount:
-                newToken = TokenAction.create(1, refAccount[0].pk)
-                newToken.save()
-                # TODO SEND EMAIL
-                messages.info(request, "Email sent. Check your emails!")
-                return redirect("/")
-            else:  # Invalid Email
-                messages.error(request, "THATS NOT EXIST")
-                print("Error dont exist")  # TODO proper errors pls
-                return redirect("/resetrequest/")
+            if not refAccount:  # Invalid Email
+                clientError = "The email given doesn't refer to an existing account."
+                serverError = "Invalid Email Reference."
+                status = False
         else:  # Invalid form
-            messages.error(request, "BAD FORM")
-            print("Goofy Form error")
+            clientError = "The form submitted was invalid. Try again."
+            serverError = "Invalid Form."
+            status = False
+        if status:
+            newToken = TokenAction.create(1, refAccount[0].pk)
+            newToken.save()  # Added password reset token
+            # TODO Send email
+            messages.info(request, "Email sent. Check your emails!")
+            return redirect("/")
+        else:
+            print(f"An Error occurred: {serverError}")
+            messages.error(request, clientError)
             return redirect("/resetrequest/")
     else:  # GET
         form = ResetRequest()
@@ -117,7 +123,7 @@ def deletion(request):
         return HttpResponseNotFound("")  # 404 Error
 
 
-def verification(request, token):  # TODO Refactor pass reset with status
+def verification(request, token):
     try:
         # Attempt to get the TokenAction of the current token
         currentToken = TokenAction.objects.get(pk=token)
@@ -127,33 +133,43 @@ def verification(request, token):  # TODO Refactor pass reset with status
         return redirect("/")
 
     if request.method == "POST":
-        form = Reset(request.POST)        # TODO add password reset handling
-        if form.is_valid():
+        status = True
+        form = Reset(request.POST)
+        if form.is_valid() and currentToken.Reason == 1:
             # Check if the email matches the userID given
             userEmail = form.cleaned_data["Email"]
             refAccount = Customer.objects.all().filter(email=userEmail)
             expectedID = currentToken.getResetUserID()
-            if refAccount and refAccount[0].pk is expectedID:  # FIXME Error I dont exist keeps outputting 
+
+            if refAccount and refAccount[0].pk is expectedID:
+                # Successful check
                 newPassword = form.cleaned_data["NewPassword"]
-                action = action + f"({newPassword})"  # TODO Explain this pls
+                action = currentToken.Action + f"({newPassword})"  # The action string is completed for execution
                 exec(action)
                 currentToken.delete()
-                messages.success(request, "PASSWORD RESET!")
+                messages.success(request, "Your password has been successfully reset!")
+                # TODO Use Logging
             else:  # Invalid Email
-                messages.error(request, "Something went wrong. Make sure the inputted email address is correct!")
-                print("Error I dont exist")  # TODO proper errors pls
-        else:   # TODO fix error messages
-            messages.error(request, "Something went wrong. Make sure the inputted email address is correct!")
-            print("INVALID FORM")
+                status = False
+                clientError = "Something went wrong. Make sure the inputted email address is correct!"
+                serverError = "I don't exist."
+        else:  # Invalid Form
+            status = False
+            clientError = "Something went wrong. Make sure the inputted email address is correct!"
+            serverError = "Invalid Form."
+        if not status:  # Error occurred
+            messages.error(request, clientError)
+            print(serverError)
         return redirect("/")
-    else:
+    else:  # GET
         context = {}
         if currentToken.Reason == 1:
-            form = Reset()    # TODO add password reset handling
+            # Reset Password
+            form = Reset()
             context = {"form": form}
             return render(request, "reset.html", context)
         else:
-            # The action will now be executed. After, redirect to index
+            # The action will now be executed. Afterwards, redirect to index
             exec(currentToken.Action)
             currentToken.delete()
             return redirect("/")

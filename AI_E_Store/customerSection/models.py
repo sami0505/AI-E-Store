@@ -110,8 +110,7 @@ class TokenAction(models.Model):
         if reason == 0:  # Account Creation
             action = f"Customer.objects.filter(CustomerID={userid}).update(is_active=True)"
         elif reason == 1:  # Password Reset
-            # TODO add the password reset function
-            pass
+            action = f"Customer.objects.get(pk={userid}).set_password"
         elif reason == 2:  # Account Deletion
             action = f"Customer.objects.get(pk={userid}).delete()"
         else:  # Invalid reason
@@ -122,3 +121,11 @@ class TokenAction(models.Model):
     def getURL(self):
         # TODO replace with domain name when switching to new domain
         return f"http://127.0.0.1:8000/verification/{self.Token}/"
+    
+    def getResetUserID(self):
+        # TODO Comment this black magic properly
+        if self.Reason == 1:
+            userID = self.Action[24:-14]
+            return userID
+        else:
+            return -1

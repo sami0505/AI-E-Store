@@ -8,12 +8,12 @@
                 {% endfor %}
             </ul>
         {% endif %}
-        <h1>Log In</h1>
+        <h1>Set Your New Password</h1>
+        <p>You must also enter your email.</p>
         <form method="post">
             {% csrf_token %}
             {{ form }}
             <input type="submit" value="Submit">
-            <a href="/resetrequest/">Forgotten your password?</a>
         </form>
     </body>
 </html>

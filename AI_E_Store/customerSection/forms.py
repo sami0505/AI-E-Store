@@ -17,7 +17,7 @@ class Register(forms.Form):
     Title = forms.CharField(label="Title:", widget=forms.Select(choices=titleChoices))
     Firstname = forms.CharField(max_length=32)
     Surname = forms.CharField(max_length=32)
-    Email = forms.CharField(max_length=64)
+    Email = forms.EmailField(max_length=64)
     Telephone = forms.CharField(max_length=11)
     Username = forms.CharField(max_length=16)
     Password = forms.CharField(max_length=60)
@@ -27,3 +27,12 @@ class Register(forms.Form):
 class Login(forms.Form):
     Username = forms.CharField(max_length=16)
     Password = forms.CharField(max_length=60)
+
+
+class ResetRequest(forms.Form):
+    Email = forms.EmailField(max_length=64)
+
+
+class Reset(forms.Form):
+    Email = forms.EmailField(max_length=64)
+    NewPassword = forms.CharField(max_length=60)

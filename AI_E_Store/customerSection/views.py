@@ -3,7 +3,7 @@ from django.http import HttpResponseNotFound
 from django.template import loader
 from django.contrib.auth import authenticate, logout, login
 from django.contrib import messages
-from .forms import Register, Login
+from .forms import Register, Login, ResetRequest, Reset
 from .accountActions import registerAccount
 from .models import TokenAction, Customer  # Customer is used with TokenAction
 
@@ -35,6 +35,33 @@ def register(request):
         form = Register()
         context = {"form": form}
         return render(request, "registration.html", context)
+
+
+# This view handles requests to reset passwords, not the reset itself
+def request_reset(request):  # TODO Refactor pass reset with status
+    if request.method == "POST":
+        form = ResetRequest(request.POST)
+        if form.is_valid():
+            userEmail = form.cleaned_data["Email"]
+            refAccount = Customer.objects.all().filter(email=userEmail)
+            if refAccount:
+                newToken = TokenAction.create(1, refAccount[0].pk)
+                newToken.save()
+                # TODO SEND EMAIL
+                messages.info(request, "Email sent. Check your emails!")
+                return redirect("/")
+            else:  # Invalid Email
+                messages.error(request, "THATS NOT EXIST")
+                print("Error dont exist")  # TODO proper errors pls
+                return redirect("/resetrequest/")
+        else:  # Invalid form
+            messages.error(request, "BAD FORM")
+            print("Goofy Form error")
+            return redirect("/resetrequest/")
+    else:  # GET
+        form = ResetRequest()
+        context = {"form": form}
+        return render(request, "resetrequest.html", context)
 
 
 def attempt_login(request):
@@ -90,7 +117,7 @@ def deletion(request):
         return HttpResponseNotFound("")  # 404 Error
 
 
-def verification(request, token):
+def verification(request, token):  # TODO Refactor pass reset with status
     try:
         # Attempt to get the TokenAction of the current token
         currentToken = TokenAction.objects.get(pk=token)
@@ -100,11 +127,31 @@ def verification(request, token):
         return redirect("/")
 
     if request.method == "POST":
-        pass        # TODO add password reset handling
+        form = Reset(request.POST)        # TODO add password reset handling
+        if form.is_valid():
+            # Check if the email matches the userID given
+            userEmail = form.cleaned_data["Email"]
+            refAccount = Customer.objects.all().filter(email=userEmail)
+            expectedID = currentToken.getResetUserID()
+            if refAccount and refAccount[0].pk is expectedID:  # FIXME Error I dont exist keeps outputting 
+                newPassword = form.cleaned_data["NewPassword"]
+                action = action + f"({newPassword})"  # TODO Explain this pls
+                exec(action)
+                currentToken.delete()
+                messages.success(request, "PASSWORD RESET!")
+            else:  # Invalid Email
+                messages.error(request, "Something went wrong. Make sure the inputted email address is correct!")
+                print("Error I dont exist")  # TODO proper errors pls
+        else:   # TODO fix error messages
+            messages.error(request, "Something went wrong. Make sure the inputted email address is correct!")
+            print("INVALID FORM")
+        return redirect("/")
     else:
         context = {}
         if currentToken.Reason == 1:
-            pass    # TODO add password reset handling
+            form = Reset()    # TODO add password reset handling
+            context = {"form": form}
+            return render(request, "reset.html", context)
         else:
             # The action will now be executed. After, redirect to index
             exec(currentToken.Action)

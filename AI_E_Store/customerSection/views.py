@@ -140,25 +140,22 @@ def verification(request, token):
             userEmail = form.cleaned_data["Email"]
             refAccount = Customer.objects.all().filter(email=userEmail)
             expectedID = currentToken.getResetUserID()
-
-            if refAccount and refAccount[0].pk is expectedID:
+            if refAccount and refAccount[0].pk == expectedID:
                 # Successful check
                 newPassword = form.cleaned_data["NewPassword"]
-                action = currentToken.Action + f"({newPassword})"  # The action string is completed for execution
+                action = currentToken.Action + f"('{newPassword}');c.save()"  # Adding the newPassword to the action str
                 exec(action)
                 currentToken.delete()
                 messages.success(request, "Your password has been successfully reset!")
                 # TODO Use Logging
             else:  # Invalid Email
                 status = False
-                clientError = "Something went wrong. Make sure the inputted email address is correct!"
-                serverError = "I don't exist."
+                serverError = "The referenced account doesn't exist or isn't the correct user."
         else:  # Invalid Form
             status = False
-            clientError = "Something went wrong. Make sure the inputted email address is correct!"
             serverError = "Invalid Form."
         if not status:  # Error occurred
-            messages.error(request, clientError)
+            messages.error(request, "Something went wrong. Make sure the inputted email address is correct!")
             print(serverError)
         return redirect("/")
     else:  # GET

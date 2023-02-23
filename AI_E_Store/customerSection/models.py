@@ -110,7 +110,7 @@ class TokenAction(models.Model):
         if reason == 0:  # Account Creation
             action = f"Customer.objects.filter(CustomerID={userid}).update(is_active=True)"
         elif reason == 1:  # Password Reset
-            action = f"Customer.objects.get(pk={userid}).set_password"
+            action = f"c=Customer.objects.get(pk={userid});c.set_password"
         elif reason == 2:  # Account Deletion
             action = f"Customer.objects.get(pk={userid}).delete()"
         else:  # Invalid reason
@@ -125,8 +125,8 @@ class TokenAction(models.Model):
     def getResetUserID(self):
         # The userID can be acquired by removing the sides of the action
         if self.Reason == 1:
-            userID = self.Action[24:-14]
-            return userID
+            userID = self.Action[26:-16]
+            return int(userID)
         else:  # Wrong reason
             return -1
 

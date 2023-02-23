@@ -1,19 +1,12 @@
-<!DOCTYPE html>
-<html>
-    <body>
-        {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
-                <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-        <h1>Set Your New Password</h1>
-        <p>You must also enter your email.</p>
-        <form method="post">
-            {% csrf_token %}
-            {{ form }}
-            <input type="submit" value="Submit">
-        </form>
-    </body>
-</html>
+{% extends "base.html" %}
+{% block title %}Password Reset{% endblock %}
+
+{% block content %}
+    <h1>Set Your New Password</h1>
+    <p>You must also enter your email.</p>
+    <form method="post">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" value="Submit">
+    </form>
+{% endblock %}

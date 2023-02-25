@@ -2,5 +2,7 @@
 .idea/
 AI_E_Store/.vscode/settings.json
 AI_E_Store/AI_E_Store/__pycache__/
-
 *.pyc
+AI_Model/.ipynb_checkpoints/
+AI_Model/metadata.csv
+AI_Model/ratings.csv

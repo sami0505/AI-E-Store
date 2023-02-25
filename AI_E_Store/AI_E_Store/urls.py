@@ -25,6 +25,7 @@ urlpatterns = [
     path('resetrequest/', views.request_reset, name='reset_request'),
     path('logout/', views.attempt_logout, name='logout'),
     path('deletion/', views.deletion, name='deletion'),
+    path('review/', views.review, name='review'),
 
     path('admin/', admin.site.urls),
 ]

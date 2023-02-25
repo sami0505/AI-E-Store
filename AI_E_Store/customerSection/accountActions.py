@@ -1,4 +1,4 @@
-from .models import Customer, TokenAction
+from .models import Customer, TokenAction, Item, OrderLine, Order, Review
 
 
 def registerAccount(form):
@@ -22,3 +22,24 @@ def registerAccount(form):
     finally:
         pass
         # TODO Log transaction
+
+
+def validateReview(user, item):
+    """ Given an item and a user, this function will check if the customer is eligible to review the item,
+    and return a boolean result of eligibility."""
+    hasOrdered = False
+    # Check if any style of item has been ordered by the given user.
+    for style in item.getStyles():
+        results = OrderLine.objects.all().filter(OrderID__CustomerID=user, StyleID=style)
+        print(results)
+        print(results[0])
+        if results.exists():
+            hasOrdered = True
+            break
+
+    # Every style has been queried. Check if item has already been reviewed by user
+    if hasOrdered:
+        hasReviewed = Review.objects.filter(CustomerID=user, ItemID=item).exists()
+        return not hasReviewed
+    else:
+        return False

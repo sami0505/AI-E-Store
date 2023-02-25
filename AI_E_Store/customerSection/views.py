@@ -2,10 +2,11 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponseNotFound
 from django.template import loader
 from django.contrib.auth import authenticate, logout, login
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import Register, Login, ResetRequest, Reset
-from .accountActions import registerAccount
-from .models import TokenAction, Customer  # Customer is used with TokenAction
+from .forms import Register, Login, ResetRequest, Reset, ReviewForm
+from .accountActions import registerAccount, validateReview
+from .models import TokenAction, Customer, Review, Item  # Customer is used with TokenAction
 
 
 def index(request):
@@ -35,6 +36,48 @@ def register(request):
         form = Register()
         context = {"form": form}
         return render(request, "registration.html", context)
+
+
+@login_required(login_url="login")
+def review(request):
+    if request.method == "POST":
+        status = False
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            try:
+                currentItem = Item.objects.get(pk=form.cleaned_data["ItemID"])
+            except Exception as error:  # Something went wrong, most likely an invalid itemID.
+                clientError = "Something went wrong with the review.."
+                serverError = error
+            else:  # Valid Item
+                customer = Customer.objects.get(pk=request.user.pk)
+                if validateReview(customer, currentItem):
+                    # Review is valid, thus is placed.
+                    comment = form.cleaned_data["Comment"]
+                    stars = form.cleaned_data["StarRating"]
+                    currentReview = Review(CustomerID=customer, ItemID=currentItem, StarRating=stars, Comment=comment)
+                    status = True
+                else:  # Not eligible to review
+                    clientError = "You are not eligible to review this item!"
+                    serverError = "An ineligible user attempted a review."
+        else:  # Form is Invalid
+            clientError = "The form submitted was invalid. Try again."
+            serverError = "Invalid Form."
+
+        # Status evaluation
+        if status:
+            currentReview.save()
+            messages.success(request, "Review successfully placed!")
+            return redirect("/")
+        else:
+            messages.error(request, clientError)
+            print(f"An Error occurred: {serverError}")
+            return redirect("/review/")
+        # TODO Add logging
+    else:  # GET
+        form = ReviewForm()
+        context = {"form": form}
+        return render(request, "review.html", context)
 
 
 # This view handles requests to reset passwords, not the reset itself

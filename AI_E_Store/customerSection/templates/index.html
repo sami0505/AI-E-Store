@@ -3,6 +3,7 @@
 {% block content %}
     {% if user.is_authenticated %}
         <h1>You are logged in</h1>
+        <a href="/review/">PLACE REVIEW</a>
         <a href="/deletion/">DELETE ACCOUNT</a>
         <a href="/logout/">LOG OUT</a>
     {% else %}
@@ -11,3 +12,4 @@
         <a href="/login/">LOG IN</a>
     {% endif %}
 {% endblock %}
+

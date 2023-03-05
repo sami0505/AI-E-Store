@@ -31,8 +31,6 @@ def validateReview(user, item):
     # Check if any style of item has been ordered by the given user.
     for style in item.getStyles():
         results = OrderLine.objects.all().filter(OrderID__CustomerID=user, StyleID=style)
-        print(results)
-        print(results[0])
         if results.exists():
             hasOrdered = True
             break

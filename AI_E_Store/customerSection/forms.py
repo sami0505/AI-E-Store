@@ -35,10 +35,10 @@ class ResetRequest(forms.Form):
 
 class Reset(forms.Form):
     Email = forms.EmailField(max_length=64)
-    NewPassword = forms.CharField(max_length=60)
+    NewPassword = forms.CharField(max_length=60, label="New Password")
 
 
 class ReviewForm(forms.Form):
     ItemID = forms.IntegerField(min_value=0, max_value=999999999)
-    StarRating = forms.IntegerField(min_value=0, max_value=5)
+    StarRating = forms.IntegerField(min_value=0, max_value=5, label="Star Rating")
     Comment = forms.CharField(max_length=256, widget=forms.Textarea())

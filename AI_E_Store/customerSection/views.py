@@ -4,16 +4,20 @@ from django.template import loader
 from django.contrib.auth import authenticate, logout, login
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.conf import settings
+from django.core.mail import send_mail
 from .forms import Register, Login, ResetRequest, Reset, ReviewForm
 from .accountActions import registerAccount, validateReview
 from .models import TokenAction, Customer, Review, Item  # Customer is used with TokenAction
 
 
+# This is the "front page" default view
 def index(request):
     context = {"user": request.user}
     return render(request, "index.html", context)
 
 
+# This view handles registrations on the webpage.
 def register(request):
     if request.method == "POST":
         # The submission is contained in the POST
@@ -38,6 +42,7 @@ def register(request):
         return render(request, "registration.html", context)
 
 
+# This view handles review placement.
 @login_required(login_url="login")
 def review(request):
     if request.method == "POST":
@@ -113,6 +118,7 @@ def request_reset(request):
         return render(request, "resetrequest.html", context)
 
 
+# This view is used to handle log in forms and the following actions to handle success
 def attempt_login(request):
     if request.method == "POST":  # POST Request
         status = True
@@ -149,11 +155,13 @@ def attempt_login(request):
         return render(request, "login.html", context)
 
 
+# This view is used to attempt a logout, even if the user isn't logged in
 def attempt_logout(request):
     logout(request)
     return redirect("/")
 
 
+# This view acts as a form of request to delete an account
 def deletion(request):
     if request.user.is_authenticated:
         # Go through with token creation
@@ -166,6 +174,7 @@ def deletion(request):
         return HttpResponseNotFound("")  # 404 Error
 
 
+# This view handles tokens and actions for user verification
 def verification(request, token):
     try:
         # Attempt to get the TokenAction of the current token
@@ -213,3 +222,15 @@ def verification(request, token):
             exec(currentToken.Action)
             currentToken.delete()
             return redirect("/")
+
+
+# DELETE -- Temporary view to test emailing capability
+def email(request):
+    subject = "Hello World!"
+    message = "This is the first email sent!"
+    origin = settings.EMAIL_HOST_USER
+    recipients = ["19091781@students.ncclondon.ac.uk"]
+    cc = ["19087670@students.ncclondon.ac.uk"]
+    bcc = ["19091639@students.ncclondon.ac.uk"]
+    send_mail(subject, message, origin, recipients)
+    return redirect("/")

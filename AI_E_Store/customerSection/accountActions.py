@@ -1,4 +1,6 @@
 from .models import Customer, TokenAction, Item, OrderLine, Order, Review
+from django.conf import settings
+from django.core.mail import send_mail
 
 
 def registerAccount(form):
@@ -12,7 +14,11 @@ def registerAccount(form):
                                                   Telephone=form["Telephone"], Title=form["Title"])
         newToken = TokenAction.create(0, newAccount.pk)
         newToken.save()
-        # TODO Send Email
+        subject = "Verify Account Registration"
+        message = f"Hi, you have requested an account registration. Here is the link: {newToken.getURL()}"
+        sender = settings.EMAIL_HOST_USER
+        recipient = [newAccount.email]
+        send_mail(subject, message, sender, recipient)
     except Exception as error:
         status = False
         # TODO Log error

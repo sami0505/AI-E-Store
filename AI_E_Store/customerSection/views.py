@@ -105,7 +105,12 @@ def request_reset(request):
         if status:
             newToken = TokenAction.create(1, refAccount[0].pk)
             newToken.save()  # Added password reset token
-            # TODO Send email
+
+            subject = "Password Reset Link"
+            message = f"Hi, you have requested a password reset. Here is the link: {newToken.getURL()}"
+            sender = settings.EMAIL_HOST_USER
+            recipient = [request.user.email]
+            send_mail(subject, message, sender, recipient)
             messages.info(request, "Email sent. Check your emails!")
             return redirect("/")
         else:
@@ -168,7 +173,11 @@ def deletion(request):
         newToken = TokenAction.create(2, request.user.CustomerID)
         newToken.save()
         messages.info(request, "The link to delete your account should be in your emails.")
-        # TODO email functionality
+        subject = "About your account deletion"
+        message = f"Hi, you have requested an account deletion. Here is the link: {newToken.getURL()}"
+        sender = settings.EMAIL_HOST_USER
+        recipient = [request.user.email]
+        send_mail(subject, message, sender, recipient)
         return redirect("/")
     else:
         return HttpResponseNotFound("")  # 404 Error
@@ -222,15 +231,3 @@ def verification(request, token):
             exec(currentToken.Action)
             currentToken.delete()
             return redirect("/")
-
-
-# DELETE -- Temporary view to test emailing capability
-def email(request):
-    subject = "Hello World!"
-    message = "This is the first email sent!"
-    origin = settings.EMAIL_HOST_USER
-    recipients = ["19091781@students.ncclondon.ac.uk"]
-    cc = ["19087670@students.ncclondon.ac.uk"]
-    bcc = ["19091639@students.ncclondon.ac.uk"]
-    send_mail(subject, message, origin, recipients)
-    return redirect("/")

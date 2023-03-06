@@ -26,6 +26,6 @@ urlpatterns = [
     path('logout/', views.attempt_logout, name='logout'),
     path('deletion/', views.deletion, name='deletion'),
     path('review/', views.review, name='review'),
-    path("testEmail/", views.email),
+    
     path('admin/', admin.site.urls),
 ]

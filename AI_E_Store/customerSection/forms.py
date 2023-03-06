@@ -7,8 +7,7 @@ titleChoices = [
     ("mr", "Mr"),
     ("mrs", "Mrs"),
     ("ms", "Ms"),
-    ("lord", "Lord"),
-    ("large", "Large")  # Large is INVALID input
+    ("lord", "Lord")
 ]
 
 
@@ -20,13 +19,13 @@ class Register(forms.Form):
     Email = forms.EmailField(max_length=64)
     Telephone = forms.CharField(max_length=11)
     Username = forms.CharField(max_length=16)
-    Password = forms.CharField(max_length=60)
+    Password = forms.CharField(max_length=60, widget=forms.PasswordInput())
     DateOfBirth = forms.DateField(label="Date Of Birth:")
 
 
 class Login(forms.Form):
     Username = forms.CharField(max_length=16)
-    Password = forms.CharField(max_length=60)
+    Password = forms.CharField(max_length=60, widget=forms.PasswordInput())
 
 
 class ResetRequest(forms.Form):
@@ -35,7 +34,7 @@ class ResetRequest(forms.Form):
 
 class Reset(forms.Form):
     Email = forms.EmailField(max_length=64)
-    NewPassword = forms.CharField(max_length=60, label="New Password")
+    NewPassword = forms.CharField(max_length=60, label="New Password", widget=forms.PasswordInput())
 
 
 class ReviewForm(forms.Form):

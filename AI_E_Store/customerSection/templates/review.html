@@ -1,11 +1,14 @@
 {% extends "base.html" %}
+{% load bootstrap5 %}
+{% block title %}Review{% endblock %}
 
 {% block content %}
-    <h1>Review an item.</h1>
-    <form method="post">
+    <h1>Review an item</h1>
+    <form method="post" class="form">
         {% csrf_token %}
-        {{ form }}
-        <input type="submit" value="Submit">
-    </form>
+        {% bootstrap_form form %}
+        {% buttons %}
+          <button type="submit" class="btn btn-primary">Submit</button>
+        {% endbuttons %}
+      </form>
 {% endblock %}
-

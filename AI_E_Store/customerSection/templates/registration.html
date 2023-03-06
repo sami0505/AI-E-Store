@@ -1,12 +1,15 @@
 {% extends "base.html" %}
-{% block title %}Register{% endblock %}
+{% load bootstrap5 %}
+{% block title %}Registration{% endblock %}
 
 {% block content %}
-    <h1>Register Your Account</h1>
-    <form method="post">
+    <h1>Register</h1>
+    <form method="post" class="form">
         {% csrf_token %}
-        {{ form }}
-        <input type="submit" value="Submit">
-    </form>
+        {% bootstrap_form form %}
+        {% buttons %}
+          <button type="submit" class="btn btn-primary">Submit</button>
+        {% endbuttons %}
+      </form>
 {% endblock %}
 

@@ -1,12 +1,16 @@
 {% extends "base.html" %}
+{% load bootstrap5 %}
 {% block title %}Log In{% endblock %}
 
 {% block content %}
     <h1>Log In</h1>
-    <form method="post">
+    <form method="post" class="form">
         {% csrf_token %}
-        {{ form }}
-        <input type="submit" value="Submit">
+        {% bootstrap_form form %}
+        {% buttons %}
+          <button type="submit" class="btn btn-primary">Submit</button>
+        {% endbuttons %}
         <a href="/resetrequest/">Forgotten your password?</a>
-    </form>
+      </form>
 {% endblock %}
+

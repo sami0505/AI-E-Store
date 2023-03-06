@@ -3,17 +3,66 @@
     <head>
         <meta charset="UTF-8">
         <title>{% block title %}NICK&ZAYNE{% endblock %}</title>
+        {% load bootstrap5 %}
+        {% bootstrap_css %}
+        {% bootstrap_javascript %}
     </head>
+    <style>
+        .navbar-brand {
+            transform: translateX(-50%);
+            left: 50%;
+            position: absolute;
+            width: 200px;
+          }
+          #contentDiv {
+            margin: auto;
+            width: 80%;
+            padding: 10px;
+          }
+    </style>
     <body>
-        {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-            <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-        {% block content %}
-            <p>Lorem Ipsum</p>
-        {% endblock %}
+        {% comment %} Navbar {% endcomment %}
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                {% comment %} Contents of navbar {% endcomment %}
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Basket</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Wishlist</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout/">Log Out</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login/">Log In</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/registration/">Register</a>
+                    </li>
+                {% endif %}
+                </ul>
+
+                <a class="navbar-brand mx-auto" href="/">Nick&Zayne</a>
+                <form class="d-flex">
+                  <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                  <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
+              </div>
+            </div>
+        </nav>
+        {% bootstrap_messages %}
+        <div id="contentDiv">
+            {% block content %}
+                <p>Lorem Ipsum</p>
+            {% endblock %}
+        </div>    
     </body>
 </html>

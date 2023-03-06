@@ -1,12 +1,15 @@
 {% extends "base.html" %}
+{% load bootstrap5 %}
 {% block title %}Password Reset{% endblock %}
 
 {% block content %}
     <h1>Set Your New Password</h1>
     <p>You must also enter your email.</p>
-    <form method="post">
+    <form method="post" class="form">
         {% csrf_token %}
-        {{ form }}
-        <input type="submit" value="Submit">
-    </form>
+        {% bootstrap_form form %}
+        {% buttons %}
+          <button type="submit" class="btn btn-primary">Submit</button>
+        {% endbuttons %}
+      </form>
 {% endblock %}

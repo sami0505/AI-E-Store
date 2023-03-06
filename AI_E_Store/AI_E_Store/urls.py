@@ -27,6 +27,7 @@ urlpatterns = [
     path('logout/', views.attempt_logout, name='logout'),
     path('deletion/', views.deletion, name='deletion'),
     path('review/', views.review, name='review'),
+    path('category/<str:currentCategory>/', views.category, name='category'),
     
     path('admin/', admin.site.urls),
 ]

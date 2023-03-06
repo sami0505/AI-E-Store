@@ -7,11 +7,11 @@ from django.contrib.auth.admin import UserAdmin
 from .models import Customer, Item, Style, Review, Order, OrderLine, TokenAction
 
 
-@admin.register(Customer)
-class CustomerAdmin(UserAdmin):
-    list_display = ('CustomerID', 'username', 'email', 'Firstname', 'Surname',
-                    'Telephone', 'Title', 'DateOfBirth', 'date_joined',
-                    'is_staff', 'is_active', 'is_superuser')
+# @admin.register(Customer)
+# class CustomerAdmin(UserAdmin):
+#     list_display = ('CustomerID', 'username', 'email', 'Firstname', 'Surname',
+#                     'Telephone', 'Title', 'DateOfBirth', 'date_joined',
+#                     'is_staff', 'is_active', 'is_superuser')
 
 
 @admin.register(Item)
@@ -27,9 +27,9 @@ class StyleAdmin(admin.ModelAdmin):
     #                 'AmountSold', 'IsPublic', 'HighResImg', 'LowResImg', 'QBR')
 
 
-@admin.register(Review)
-class ReviewAdmin(admin.ModelAdmin):
-    list_display = ('ReviewID', 'CustomerID', 'ItemID', 'Comment', 'StarRating')
+# @admin.register(Review)
+# class ReviewAdmin(admin.ModelAdmin):
+#     list_display = ('ReviewID', 'CustomerID', 'ItemID', 'Comment', 'StarRating')
 
 
 @admin.register(Order)
@@ -43,6 +43,6 @@ class OrderLineAdmin(admin.ModelAdmin):
     list_display = ('OrderLineID', 'OrderID', 'StyleID', 'Quantity')
 
 
-@admin.register(TokenAction)
-class TokenActionAdmin(admin.ModelAdmin):
-    list_display = ('Token', 'Reason', 'Action')
+# @admin.register(TokenAction)
+# class TokenActionAdmin(admin.ModelAdmin):
+#     list_display = ('Token', 'Reason', 'Action')

@@ -1,17 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-    {% if user.is_authenticated %}
-        <h1>You are logged in</h1>
-    {% else %}
-        <h1>Hello World!</h1>
-    {% endif %}
-
+    <h1>Search Results</h1>
+    <br>
     {% if rows != 0 %}
         {% include "./browse.html"%}
     {% else %}
         No Search Results
     {% endif %}
-    
 {% endblock %}
-

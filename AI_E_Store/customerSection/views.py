@@ -234,3 +234,15 @@ def verification(request, token):
             exec(currentToken.Action)
             currentToken.delete()
             return redirect("/")
+
+
+categorySet = {"coats", "jackets", "shirts", "t-shirts", "shorts", "trousers", "hoodies", "sweaters", "hats", "socks"}
+def category(request, currentCategory):
+    if currentCategory in categorySet:
+        itemsShown = []
+        query = Item.objects.filter(Category=currentCategory.title())
+        rows = formatRows(query)
+        context = {"user": request.user, "rows": rows, "mediaURL": settings.MEDIA_ROOT}
+        return render(request, "category.html", context)
+    else:  # Invalid category
+        return redirect("/")

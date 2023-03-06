@@ -50,24 +50,29 @@ def validateReview(user, item):
 
 def formatRows(query):
     """ Given a search query result, it returns its formatted version in rows. """
-    itemsShown = []
-    # Each itemEntry is a list of a displayed item. All items from query are put in itemsShown
-    # itemEntry format: 0: ItemID, 1: Price, 2: Title, 3: HighResImg
-    for item in query:
-        style = item.getStyles()[0]
-        itemEntry = [item.ItemID, item.Price, item.Title, style.HighResImg.url]
-        itemsShown.append(itemEntry)
-    
-    # itemsShown is formatted to a row format suitable for display.
-    rows = []
-    current_row = []
-    for item in itemsShown:
-        if len(current_row) == 4:
-            rows.append(current_row)
-            current_row = []
-        current_row.append(item)
-    # Adding the last row
-    if current_row:
-        rows.append(current_row)
-    # Rows is a list of lists (rows) that each contain 4 or less itemEntries
-    return rows
+    if len(query) > 0:
+        itemsShown = []
+        # Each itemEntry is a list of a displayed item. All items from query are put in itemsShown
+        # itemEntry format: 0: ItemID, 1: Price, 2: Title, 3: HighResImg
+        for item in query:
+            if len(item.getStyles()) > 0:
+                style = item.getStyles()[0]
+                itemEntry = [item.ItemID, item.Price, item.Title, style.HighResImg.url]
+                itemsShown.append(itemEntry)
+        
+        # itemsShown is formatted to a row format suitable for
+        rows = []
+        currentRow = []
+        # Each item is added to current
+        for item in itemsShown:
+            if len(currentRow) == 4:
+                rows.append(currentRow)
+                currentRow = []
+            currentRow.append(item)
+        # Adding the last row
+        if currentRow:
+            rows.append(currentRow)
+        # Rows is a list of lists (rows) that each contain 4 or less itemEntries
+        return rows
+    else:
+        return 0

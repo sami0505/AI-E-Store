@@ -47,3 +47,27 @@ def validateReview(user, item):
         return not hasReviewed
     else:
         return False
+
+def formatRows(query):
+    """ Given a search query result, it returns its formatted version in rows. """
+    itemsShown = []
+    # Each itemEntry is a list of a displayed item. All items from query are put in itemsShown
+    # itemEntry format: 0: ItemID, 1: Price, 2: Title, 3: HighResImg
+    for item in query:
+        style = item.getStyles()[0]
+        itemEntry = [item.ItemID, item.Price, item.Title, style.HighResImg.url]
+        itemsShown.append(itemEntry)
+    
+    # itemsShown is formatted to a row format suitable for display.
+    rows = []
+    current_row = []
+    for item in itemsShown:
+        if len(current_row) == 4:
+            rows.append(current_row)
+            current_row = []
+        current_row.append(item)
+    # Adding the last row
+    if current_row:
+        rows.append(current_row)
+    # Rows is a list of lists (rows) that each contain 4 or less itemEntries
+    return rows

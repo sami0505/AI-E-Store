@@ -7,13 +7,16 @@ from django.contrib import messages
 from django.conf import settings
 from django.core.mail import send_mail
 from .forms import Register, Login, ResetRequest, Reset, ReviewForm
-from .accountActions import registerAccount, validateReview
-from .models import TokenAction, Customer, Review, Item  # Customer is used with TokenAction
+from .accountActions import registerAccount, validateReview, formatRows
+from .models import TokenAction, Customer, Review, Item, Style  # Customer is used with TokenAction
 
 
 # This is the "front page" default view
 def index(request):
-    context = {"user": request.user}
+    itemsShown = []
+    query = Item.objects.all().filter()
+    rows = formatRows(query)
+    context = {"user": request.user, "rows": rows, "mediaURL": settings.MEDIA_ROOT}
     return render(request, "index.html", context)
 
 

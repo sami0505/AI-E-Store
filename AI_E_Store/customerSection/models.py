@@ -2,6 +2,11 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
 from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
+from django.conf import settings
+from django.core.files import File
+import urllib
+import os
+from PIL import Image
 import random
 import string
 
@@ -49,12 +54,10 @@ class Style(models.Model):
     Size = models.CharField(max_length=3, blank=False)
     Colour = models.CharField(max_length=16, blank=False)
     Quantity = models.SmallIntegerField(blank=False)
-    AmountSold = models.IntegerField(blank=False)
+    AmountSold = models.IntegerField(blank=False, default=0)
     IsPublic = models.BooleanField(blank=False)
-    # HighResImg = models.ImageField(width_field=1080, height_field=1080, blank=False)
-    # LowResImg = models.ImageField(width_field=256, height_field=256, blank=False)
+    HighResImg = models.ImageField()
     QBR = models.DecimalField(default=-1.0, max_digits=3, decimal_places=2, blank=False)
-
 
 # The Review model is a singular record of a user's review
 class Review(models.Model):

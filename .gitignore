@@ -8,3 +8,4 @@ AI_Model/metadata.csv
 AI_Model/ratings.csv
 AI_Model/ratings.pickle
 AI_Model/ratingsOld.pickle
+*.png

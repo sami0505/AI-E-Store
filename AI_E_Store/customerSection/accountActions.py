@@ -48,8 +48,14 @@ def validateReview(user, item):
     else:
         return False
 
-def formatRows(query):
-    """ Given a search query result, it returns its formatted version in rows. """
+def formatRows(query, sortingMethod=0):
+    """ Given a search query result, it returns its formatted version in rows. Sorting Method Codes are as follows:
+        0: Alphabetical A-Z
+        1: Alphabetical Z-A
+        2: Price Low-High
+        3: Price High-Low
+        default: 0
+    """
     if len(query) > 0:
         itemsShown = []
         # Each itemEntry is a list of a displayed item. All items from query are put in itemsShown
@@ -59,7 +65,18 @@ def formatRows(query):
                 style = item.getStyles()[0]
                 itemEntry = [item.ItemID, item.Price, item.Title, style.HighResImg.url]
                 itemsShown.append(itemEntry)
-        
+
+        # Sorting the itemsShown based on the Sort Method. The result is the items being sorted correctly.
+        if sortingMethod < 4 and sortingMethod >= 0:
+            if sortingMethod < 2:  # Alphabetical Sort
+                itemsShown.sort(key=lambda x: x[2], reverse=sortingMethod)
+            else:  # Price Sort
+                reversed = sortingMethod - 2
+                itemsShown.sort(key=lambda x: x[1], reverse=reversed)
+        else:  # Invalid sorting method value
+            print("Invalid value, using default...")
+            itemsShown.sort(key=lambda x: x[2])
+
         # itemsShown is formatted to a row format suitable for
         rows = []
         currentRow = []

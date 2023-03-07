@@ -240,6 +240,17 @@ def verification(request, token):
 categorySet = {"coats", "jackets", "shirts", "t-shirts", "shorts", "trousers", "hoodies", "sweaters", "hats", "socks"}
 def category(request, currentCategory):
     if currentCategory in categorySet:
+        sortType = request.GET.get("sort")  # Get the user's sorting preference
+        
+        # This part of the code is necessary to validate the parameter or lack of it
+        if sortType != None:
+            try:
+                sortType = int(sortType)
+            except:  # The sort parameter is not an integer
+                sortType = 0
+        else:  # The sort parameter hasn't been provided
+            sortType = 0
+
         itemsShown = []  # Valid category
         query = Item.objects.filter(Category=currentCategory.title())
         rows = formatRows(query)
@@ -248,14 +259,25 @@ def category(request, currentCategory):
     else:  # Invalid category
         return redirect("/")
     
-# # This function returns
-# def search(request):
-#     if request.method == "POST":
-#         form = request.POST
-#         itemsShown = []  # Valid category
-#         query = Item.objects.filter(Title__contains=form.)
-#         rows = formatRows(query)
-#         context = {"user": request.user,"rows": rows,"mediaURL": settings.MEDIA_ROOT}
-#         return render(request, "search.html", context)
-#     else:
-#         return redirect("/")
+
+# This function returns the search results of the query of the search bar
+def search(request):
+    if request.method == "GET":
+        searchString = request.GET.get("search")  # Get user's search text
+        sortType = request.GET.get("sort")  # Get the user's sorting preference
+        
+        # This part of the code is necessary to validate the parameter or lack of it
+        if sortType != None:
+            try:
+                sortType = int(sortType)
+            except:  # The sort parameter is not an integer
+                sortType = 0
+        else:  # The sort parameter hasn't been provided
+            sortType = 0
+
+        query = Item.objects.filter(Title__icontains=searchString)
+        rows = formatRows(query, sortType)
+        context = {"user": request.user,"rows": rows,"mediaURL": settings.MEDIA_ROOT}
+        return render(request, "search.html", context)
+    else:  # POST request
+        return redirect("/")

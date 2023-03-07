@@ -236,13 +236,26 @@ def verification(request, token):
             return redirect("/")
 
 
+# The category view is a type of discrete result browsing. The only outcomes from category are in the below set
 categorySet = {"coats", "jackets", "shirts", "t-shirts", "shorts", "trousers", "hoodies", "sweaters", "hats", "socks"}
 def category(request, currentCategory):
     if currentCategory in categorySet:
-        itemsShown = []
+        itemsShown = []  # Valid category
         query = Item.objects.filter(Category=currentCategory.title())
         rows = formatRows(query)
-        context = {"user": request.user, "rows": rows, "mediaURL": settings.MEDIA_ROOT}
+        context = {"user": request.user, "category": currentCategory.title() ,"rows": rows,"mediaURL": settings.MEDIA_ROOT}
         return render(request, "category.html", context)
     else:  # Invalid category
         return redirect("/")
+    
+# # This function returns
+# def search(request):
+#     if request.method == "POST":
+#         form = request.POST
+#         itemsShown = []  # Valid category
+#         query = Item.objects.filter(Title__contains=form.)
+#         rows = formatRows(query)
+#         context = {"user": request.user,"rows": rows,"mediaURL": settings.MEDIA_ROOT}
+#         return render(request, "search.html", context)
+#     else:
+#         return redirect("/")

@@ -32,6 +32,7 @@ class Customer(AbstractBaseUser, PermissionsMixin):
     EMAIL_FIELD = "email"
     REQUIRED_FIELDS = ["Firstname", "Surname", "Email", "Telephone",
                        "Title", "DateOfBirth", "DateJoined"]
+    
     # **Lowercase to keep default UserManager working
 
 

@@ -9,3 +9,4 @@ AI_Model/metadata.csv
 AI_Model/ratings.pickle
 *.png
 *.jpg
+*.jfif

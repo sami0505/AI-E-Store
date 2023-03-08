@@ -112,7 +112,7 @@ def request_reset(request):
             subject = "Password Reset Link"
             message = f"Hi, you have requested a password reset. Here is the link: {newToken.getURL()}"
             sender = settings.EMAIL_HOST_USER
-            recipient = [request.user.email]
+            recipient = [userEmail]
             send_mail(subject, message, sender, recipient)
             messages.info(request, "Email sent. Check your emails!")
             return redirect("/")
@@ -290,7 +290,7 @@ def detailed(request, itemID):
         # Get style index to acquire image to show, sanitize it, use it
         styleIndex = request.GET.get("style")
         styleIndex = sanitizeParam(styleIndex)            
-        currentStyleImg = styles[styleIndex].HighResImg.url
+        currentStyle = styles[styleIndex]
 
         # Check if the user is eligible to review this item
         if request.user.is_authenticated:
@@ -301,8 +301,46 @@ def detailed(request, itemID):
             validity = False
 
         context = {"user": request.user, "mediaURL": settings.MEDIA_URL, "item": item, "styles": styles, "reviewCount": len(reviews), 
-                "reviews": reviews, "img": currentStyleImg, "isEligible": validity, "stars": meanRating}
+                "reviews": reviews, "currentStyle": currentStyle, "isEligible": validity, "stars": meanRating}
         return render(request, "detailed.html", context)
     else:  # POST
         # TODO handle this
         pass
+
+# This view adds the given item from the url to the logged in user's basket
+@login_required(login_url="login")
+def addToBasket(request, styleID):
+    try:
+        styleAdded = Style.objects.get(pk=styleID)
+    except:  # An error occured. Most likely an incorrent styleID
+        pass
+    else:
+        customer = Customer.objects.get(pk=request.user.pk)
+        customer.basket += f"{styleID},"
+        customer.save()
+        messages.success(request, "Item successfully added to basket!")
+    return redirect("/")
+
+# This view displays the user's basket.
+@login_required(login_url="login")
+def basket(request):
+    customer = Customer.objects.get(pk=request.user.pk)
+    basket = customer.basket.split(",")
+    basket.remove("")
+    styles = [Style.objects.get(pk=styleID) for styleID in basket]
+    context = {"user": request.user, "styles": styles, "mediaURL": settings.MEDIA_ROOT}
+    return render(request, "basket.html", context)
+
+#
+@login_required(login_url="login")
+def removeFromBasket(request, styleID):
+    customer = Customer.objects.get(pk=request.user.pk)
+    basket = customer.basket.split(",")
+    if styleID in basket:
+        basket.remove(styleID)
+        newBasket = ",".join(basket)
+        customer.basket = newBasket
+        customer.save()
+        return redirect("/")
+    else:
+        return redirect("/basket/")

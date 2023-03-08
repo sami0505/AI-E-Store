@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+<style>
+    .row{
+        max-height: 25%;
+    }
+</style>
+
+{% block content %}
+<h1>Your basket</h1>
+<div class="container md-5">
+    {% for style in styles %}
+        <div class="row mb-3 border">
+            <div class="col">
+            <img src="{{style.HighResImg.url}}" class="rounded" alt="..." style="max-height: 175px;"></div>
+            <div class="col" align="center">
+            <h2 style="max-height: 25%;">Price: £ {{style.ItemID.Price}}, Size: {{style.Size}} Colour: {{style.Colour}}</h2></div>
+            <div class="col" align="center">
+            <a href="/removefrombasket/{{style.StyleID}}" class="btn btn-primary mb-5" style="max-height: 25%;">Remove this Item</a></div>
+        </div>
+    {% endfor %}
+    </div>
+{% endblock %}

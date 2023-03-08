@@ -15,6 +15,9 @@ urlpatterns = [
     path('category/<str:currentCategory>/', views.category, name='category'),
     path('search/', views.search, name="search"),
     path('detailed/<int:itemID>', views.detailed, name="detailed"),
+    path('basket/', views.basket, name="basket"),
+    path('addtobasket/<int:styleID>', views.addToBasket, name="addToBasket"),
+    path('removefrombasket/<int:styleID>', views.removeFromBasket, name="removeFromBasket"),
     path('admin/', admin.site.urls),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -6,6 +6,10 @@
         {% load bootstrap5 %}
         {% bootstrap_css %}
         {% bootstrap_javascript %}
+        <script>
+          {% block scripts %}
+          {% endblock %}
+        </script>
     </head>
     <style>
         .navbar-brand {

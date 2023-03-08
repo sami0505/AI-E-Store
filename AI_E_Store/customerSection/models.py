@@ -22,6 +22,8 @@ class Customer(AbstractBaseUser, PermissionsMixin):
     Title = models.CharField(max_length=4, blank=False)
     DateOfBirth = models.DateField(blank=False)
     date_joined = models.DateTimeField(blank=False, default=timezone.now)  # **
+    basket = models.CharField(max_length=4096, default="")
+    wishlish = models.CharField(max_length=4096, default="")
     is_staff = models.BooleanField(default=False)  # **
     is_active = models.BooleanField(default=False)  # **
     is_superuser = models.BooleanField(default=False)  # **
@@ -45,6 +47,18 @@ class Item(models.Model):
     def getStyles(self):
         styles = Style.objects.all().filter(ItemID=self)
         return styles
+    
+    # This method returns the mean star rating of an item over all its reviews
+    def getMeanRating(self):
+        reviews = Review.objects.filter(ItemID=self.ItemID)
+        if len(reviews) > 0:
+            sum = 0
+            for review in reviews:
+                sum += review.StarRating
+            mean = sum // len(reviews)
+            return mean
+        else:
+            return 0
 
 
 # The Style model contains the highly specific info per "style" of an item. Blue, Red, Small, Big etc
@@ -101,7 +115,6 @@ def generateToken():
             break  # The loop breaks because it is a unique token
     return token
 
-
 # The TokenAction model contains a record between a token and what action should follow
 class TokenAction(models.Model):
     Token = models.CharField(primary_key=True, max_length=15, default=generateToken)
@@ -115,7 +128,6 @@ class TokenAction(models.Model):
             0: Account Creation
             1: Password Reset
             2: Account Deletion """
-        # TODO set up token expiration
         if reason == 0:  # Account Creation
             action = f"Customer.objects.filter(CustomerID={userid}).update(is_active=True)"
         elif reason == 1:  # Password Reset
@@ -128,7 +140,6 @@ class TokenAction(models.Model):
 
     # This function returns the url with the given token
     def getURL(self):
-        # TODO replace with domain name when switching to new domain
         return f"http://127.0.0.1:8000/verification/{self.Token}/"
 
     def getResetUserID(self):

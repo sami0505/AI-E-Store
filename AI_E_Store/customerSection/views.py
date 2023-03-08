@@ -235,21 +235,25 @@ def verification(request, token):
             currentToken.delete()
             return redirect("/")
 
+# Turns a query parameter from a string that could be invalid to an integer
+def sanitizeParam(param):
+    if param != None:
+        try:
+            param = int(param)
+        except:  # The parameter is not an integer
+            param = 0
+    else:  # The parameter hasn't been provided
+        param = 0
+
+    return param
+    
 
 # The category view is a type of discrete result browsing. The only outcomes from category are in the below set
 categorySet = {"coats", "jackets", "shirts", "t-shirts", "shorts", "trousers", "hoodies", "sweaters", "hats", "socks"}
 def category(request, currentCategory):
     if currentCategory in categorySet:
         sortType = request.GET.get("sort")  # Get the user's sorting preference
-        
-        # This part of the code is necessary to validate the parameter or lack of it
-        if sortType != None:
-            try:
-                sortType = int(sortType)
-            except:  # The sort parameter is not an integer
-                sortType = 0
-        else:  # The sort parameter hasn't been provided
-            sortType = 0
+        sortType = sanitizeParam(sortType) # Ensure valid sortType
 
         itemsShown = []  # Valid category
         query = Item.objects.filter(Category=currentCategory.title())
@@ -265,15 +269,7 @@ def search(request):
     if request.method == "GET":
         searchString = request.GET.get("search")  # Get user's search text
         sortType = request.GET.get("sort")  # Get the user's sorting preference
-        
-        # This part of the code is necessary to validate the parameter or lack of it
-        if sortType != None:
-            try:
-                sortType = int(sortType)
-            except:  # The sort parameter is not an integer
-                sortType = 0
-        else:  # The sort parameter hasn't been provided
-            sortType = 0
+        sortType = sanitizeParam(sortType)  # Ensure valid sortType
 
         query = Item.objects.filter(Title__icontains=searchString)
         rows = formatRows(query, sortType)
@@ -281,3 +277,32 @@ def search(request):
         return render(request, "search.html", context)
     else:  # POST request
         return redirect("/")
+
+# This view returns a detailed look at a certain item
+def detailed(request, itemID):
+    if request.method == "GET":
+        # Get item, styles and reviews for context
+        item = Item.objects.get(pk=itemID)
+        styles = list(item.getStyles())
+        reviews = list(Review.objects.filter(ItemID=itemID))
+        meanRating = item.getMeanRating()
+
+        # Get style index to acquire image to show, sanitize it, use it
+        styleIndex = request.GET.get("style")
+        styleIndex = sanitizeParam(styleIndex)            
+        currentStyleImg = styles[styleIndex].HighResImg.url
+
+        # Check if the user is eligible to review this item
+        if request.user.is_authenticated:
+            customer = Customer.objects.get(pk=request.user.pk)
+            validity = validateReview(customer, item)
+            validity = True
+        else:
+            validity = False
+
+        context = {"user": request.user, "mediaURL": settings.MEDIA_URL, "item": item, "styles": styles, "reviewCount": len(reviews), 
+                "reviews": reviews, "img": currentStyleImg, "isEligible": validity, "stars": meanRating}
+        return render(request, "detailed.html", context)
+    else:  # POST
+        # TODO handle this
+        pass

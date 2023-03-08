@@ -8,3 +8,4 @@ AI_Model/.ipynb_checkpoints/Recommender-checkpoint.ipynb
 AI_Model/metadata.csv
 AI_Model/ratings.pickle
 *.png
+*.jpg

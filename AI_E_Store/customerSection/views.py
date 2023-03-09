@@ -331,16 +331,14 @@ def basket(request):
     context = {"user": request.user, "styles": styles, "mediaURL": settings.MEDIA_ROOT}
     return render(request, "basket.html", context)
 
-#
+# This view results in the removal of the style whose ID is in the URL
 @login_required(login_url="login")
 def removeFromBasket(request, styleID):
     customer = Customer.objects.get(pk=request.user.pk)
     basket = customer.basket.split(",")
-    if styleID in basket:
-        basket.remove(styleID)
+    if str(styleID) in basket:
+        basket.remove(str(styleID))
         newBasket = ",".join(basket)
         customer.basket = newBasket
         customer.save()
-        return redirect("/")
-    else:
-        return redirect("/basket/")
+    return redirect("/basket/")

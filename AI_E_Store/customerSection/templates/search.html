@@ -4,7 +4,13 @@
     <h1>Search Results</h1>
     <br>
     {% if rows != 0 %}
-        {% include "./sort.html"%}
+        <a class="btn btn-primary m-3" data-bs-toggle="collapse" href="#sorts" role="button" aria-expanded="false" aria-controls="sorts">Sorting</a>
+        <div id="sorts" class="collapse m-2">
+            <a href="{{request.get_full_path}}&sort=0" class="btn btn-secondary m-1">Alphabetic Ascending</a> <br>
+            <a href="{{request.get_full_path}}&sort=1" class="btn btn-secondary m-1">Alphabetic Descending</a> <br>
+            <a href="{{request.get_full_path}}&sort=2" class="btn btn-secondary m-1">Price Low-High</a> <br>
+            <a href="{{request.get_full_path}}&sort=3" class="btn btn-secondary m-1">Price High-Low</a> 
+        </div>
         {% include "./browse.html"%}
     {% else %}
         No Search Results

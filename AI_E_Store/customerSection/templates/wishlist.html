@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+<style>
+    .row{
+        max-height: 25%;
+    }
+</style>
+
+{% block content %}
+<h1>Your wishlist</h1>
+<div class="container md-5">
+    {% if styles %}
+        {% for style in styles %}
+            <div class="row mb-3 border">
+                <div class="col">
+                    <img src="{{style.HighResImg.url}}" class="rounded" alt="..." style="max-height: 175px;"></div>
+                    <div class="col" align="center">
+                    <h2 style="max-height: 25%;">Price: £ {{style.ItemID.Price}}, Size: {{style.Size}} Colour: {{style.Colour}}</h2>
+                </div>
+                <div class="col" align="center"> <br>
+                    <a href="/removefromwishlist/{{style.StyleID}}" class="btn btn-primary mb-3">Remove this Item</a> <br>
+                    <a href="/addtobasket/{{style.StyleID}}" class="btn btn-primary mb-3">Add to basket</a>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        Your wishlist is empty.
+    {% endif %}
+    </div>
+{% endblock %}

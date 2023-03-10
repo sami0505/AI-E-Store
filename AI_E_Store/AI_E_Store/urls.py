@@ -18,6 +18,9 @@ urlpatterns = [
     path('basket/', views.basket, name="basket"),
     path('addtobasket/<int:styleID>', views.addToBasket, name="addToBasket"),
     path('removefrombasket/<int:styleID>', views.removeFromBasket, name="removeFromBasket"),
+    path('wishlist/', views.wishlist, name="wishlist"),
+    path('addtowishlist/<int:styleID>', views.addToWishlist, name="addToWishlist"),
+    path('removefromwishlist/<int:styleID>', views.removeFromWishlist, name="removeFromWishlist"),
     path('admin/', admin.site.urls),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

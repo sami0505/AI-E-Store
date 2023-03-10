@@ -23,7 +23,7 @@ class Customer(AbstractBaseUser, PermissionsMixin):
     DateOfBirth = models.DateField(blank=False)
     date_joined = models.DateTimeField(blank=False, default=timezone.now)  # **
     basket = models.CharField(max_length=4096, default="")
-    wishlish = models.CharField(max_length=4096, default="")
+    wishlist = models.CharField(max_length=4096, default="")
     is_staff = models.BooleanField(default=False)  # **
     is_active = models.BooleanField(default=False)  # **
     is_superuser = models.BooleanField(default=False)  # **

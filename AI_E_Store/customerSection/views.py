@@ -319,7 +319,7 @@ def addToBasket(request, styleID):
         customer.basket += f"{styleID},"
         customer.save()
         messages.success(request, "Item successfully added to basket!")
-    return redirect("/")
+    return redirect(request.META.get('HTTP_REFERER'))
 
 # This view displays the user's basket.
 @login_required(login_url="login")
@@ -331,7 +331,7 @@ def basket(request):
     context = {"user": request.user, "styles": styles, "mediaURL": settings.MEDIA_ROOT}
     return render(request, "basket.html", context)
 
-# This view results in the removal of the style whose ID is in the URL
+# This view results in the removal of the style whose ID is in the URL 
 @login_required(login_url="login")
 def removeFromBasket(request, styleID):
     customer = Customer.objects.get(pk=request.user.pk)
@@ -342,3 +342,39 @@ def removeFromBasket(request, styleID):
         customer.basket = newBasket
         customer.save()
     return redirect("/basket/")
+
+# This view adds the given item from the url to the logged in user's wishlist
+@login_required(login_url="login")
+def addToWishlist(request, styleID):
+    try:
+        styleAdded = Style.objects.get(pk=styleID)
+    except:  # An error occured. Most likely an incorrent styleID
+        pass
+    else:
+        customer = Customer.objects.get(pk=request.user.pk)
+        customer.wishlist += f"{styleID},"
+        customer.save()
+        messages.success(request, "Item successfully added to wishlist!")
+    return redirect("/")
+
+# This view displays the user's wishlist.
+@login_required(login_url="login")
+def wishlist(request):
+    customer = Customer.objects.get(pk=request.user.pk)
+    wishlist = customer.wishlist.split(",")
+    wishlist.remove("")
+    styles = [Style.objects.get(pk=styleID) for styleID in wishlist]
+    context = {"user": request.user, "styles": styles, "mediaURL": settings.MEDIA_ROOT}
+    return render(request, "wishlist.html", context)
+
+# This view results in the removal of the style whose ID is in the URL
+@login_required(login_url="login")
+def removeFromWishlist(request, styleID):
+    customer = Customer.objects.get(pk=request.user.pk)
+    wishlist = customer.wishlist.split(",")
+    if str(styleID) in wishlist:
+        wishlist.remove(str(styleID))
+        newWishlist = ",".join(wishlist)
+        customer.wishlist = newWishlist
+        customer.save()
+    return redirect("/wishlist/")

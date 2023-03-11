@@ -4,7 +4,7 @@ from django.template import loader
 from django.contrib.auth import authenticate, logout, login
 from django.contrib import messages
 from .forms import Register, Login, ResetRequest, Reset
-from .accountActions import registerAccount
+from .accountActions import registerAccount, generateFeatured
 from .models import TokenAction, Customer  # Customer is used with TokenAction
 
 
@@ -170,3 +170,7 @@ def verification(request, token):
             exec(currentToken.Action)
             currentToken.delete()
             return redirect("/")
+        
+def feature(request):
+    generateFeatured()
+    return redirect("/")

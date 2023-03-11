@@ -78,7 +78,7 @@ WSGI_APPLICATION = 'AI_E_Store.wsgi.application'
 DATABASES = {
      'default': {  
         'ENGINE': 'django.db.backends.mysql',  
-        'NAME': 'db',  
+        'NAME': 'db2',  
         'USER': 'root',  
         'PASSWORD': '1234567890',
         'HOST': '127.0.0.1',  

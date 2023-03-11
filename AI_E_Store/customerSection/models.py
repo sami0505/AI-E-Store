@@ -51,6 +51,32 @@ class ItemInstance(models.Model):
     QBR = models.DecimalField(default=-1.0, max_digits=3, decimal_places=2, blank=False)
 
 
+# TODO comment me pls
+class FeaturedItems(models.Model):
+    DateUsed = models.DateField(primary_key=True, default=timezone.now().date)
+    Item1 = models.ForeignKey("ItemInstance", on_delete=models.CASCADE, db_column="", blank=False, related_name="ItemNo1")
+    Item2 = models.ForeignKey("ItemInstance", on_delete=models.CASCADE, db_column="", blank=False, related_name="ItemNo2")
+    Item3 = models.ForeignKey("ItemInstance", on_delete=models.CASCADE, db_column="", blank=False, related_name="ItemNo3")
+    Item4 = models.ForeignKey("ItemInstance", on_delete=models.CASCADE, db_column="", blank=False, related_name="ItemNo4")
+    Item5 = models.ForeignKey("ItemInstance", on_delete=models.CASCADE, db_column="", blank=False, related_name="ItemNo5")
+    Item6 = models.ForeignKey("ItemInstance", on_delete=models.CASCADE, db_column="", blank=False, related_name="ItemNo6")
+    Item7 = models.ForeignKey("ItemInstance", on_delete=models.CASCADE, db_column="", blank=False, related_name="ItemNo7")
+    Item8 = models.ForeignKey("ItemInstance", on_delete=models.CASCADE, db_column="", blank=False, related_name="ItemNo8")
+
+    # TODO comment pls
+    def returnItems(self):
+        itemList = []
+        itemList.append(self.Item1)
+        itemList.append(self.Item2)
+        itemList.append(self.Item3)
+        itemList.append(self.Item4)
+        itemList.append(self.Item5)
+        itemList.append(self.Item6)
+        itemList.append(self.Item7)
+        itemList.append(self.Item8)
+        return itemList
+
+
 # The Review model is a singular record of a user's review
 class Review(models.Model):
     ReviewID = models.AutoField(primary_key=True, blank=False)
@@ -77,6 +103,7 @@ class Order(models.Model):
 # The OrderLine model is used to record each item ordered per Order
 class OrderLine(models.Model):
     OrderLineID = models.AutoField(primary_key=True, blank=False)
+    OrderID = models.ForeignKey("Order", on_delete=models.CASCADE, db_column="", blank=False)
     ItemInstanceID = models.ForeignKey("ItemInstance", on_delete=models.CASCADE, db_column="", blank=False)
     Quantity = models.SmallIntegerField(blank=False)
 

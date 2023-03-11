@@ -307,6 +307,13 @@ def detailed(request, itemID):
         # TODO handle this
         pass
 
+
+# This view shows the user's profile data, also giving the option to delete the account
+@login_required(login_url="/login/")
+def profile(request):
+    context = {"user": request.user, "mediaURL": settings.MEDIA_ROOT}
+    return render(request, "profile.html", context)
+
 # This view adds the given item from the url to the logged in user's basket
 @login_required(login_url="login")
 def addToBasket(request, styleID):

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load bootstrap5 %}
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+    <h1>Profile</h1>
+    <br>
+
+    <div class="bg-light border rounded p-4">
+        <h3>Your information:</h3>
+        <span><h5>Username:</h5><p>{{ request.user.username }}</p></span>
+        <span><h5>First Name:</h5><p>{{ request.user.Firstname }}</p></span>
+        <span><h5>Surname:</h5><p>{{ request.user.Surname }}</p></span>
+        <span><h5>Date Joined:</h5><p>{{ request.user.date_joined.date }}</p></span>
+        <a href="/deletion/" class="btn btn-primary m-1">Request account deletion</a>
+    </div>
+{% endblock %}
+

@@ -10,6 +10,7 @@ urlpatterns = [
     path('login/', views.attempt_login, name='login'),
     path('resetrequest/', views.request_reset, name='reset_request'),
     path('logout/', views.attempt_logout, name='logout'),
+    path('profile/', views.profile, name='profile'),
     path('deletion/', views.deletion, name='deletion'),
     path('review/', views.review, name='review'),
     path('category/<str:currentCategory>/', views.category, name='category'),

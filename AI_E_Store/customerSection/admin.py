@@ -20,8 +20,7 @@ class StyleAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('OrderID', 'CustomerID', 'DateOfSale', 'PaymentMethod',
-                    'IsShipped', 'Postcode', 'AddressLine1', 'AddressLine2', 'City', 'County')
+    list_display = ('OrderID', 'CustomerID', 'PaymentMethod', "IsCollected")
 
 
 @admin.register(OrderLine)

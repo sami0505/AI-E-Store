@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load bootstrap5 %}
+{% block title %}Checkout{% endblock %}
+
+{% block content %}
+  <h1>Check Out</h1> <br>
+  <h2>To finally confirm, you agree to reserve these items:</h2>
+  <div class="bg-light border rounded p-4 m-4">
+    {% for line in itemLines %}
+      <p>{{line}}</p>
+    {% endfor %}    
+  </div>
+  <br>
+  <br>
+  <h2>For the total of this price upon collection:</h2>
+  <div class="bg-light border rounded p-4 m-4">
+    <h1>£ {{totalPrice}}</h1>   
+  </div>
+  <a href="/reserve/" class="btn btn-primary m-1">Reserve</a>
+{% endblock %}
+

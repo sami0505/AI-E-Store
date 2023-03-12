@@ -83,18 +83,28 @@ class Review(models.Model):
     StarRating = models.SmallIntegerField(blank=False)
 
 
+# This function was needed to make defaulting with timezone.now().date possible
+def today():
+    date = timezone.now().date()
+    return date
+
 # The Order model contains the bulk of information for an order, without the items
 class Order(models.Model):
     OrderID = models.AutoField(primary_key=True)
     CustomerID = models.ForeignKey("Customer", on_delete=models.CASCADE, db_column="", blank=False)
-    DateOfSale = models.DateField(blank=False)
-    PaymentMethod = models.CharField(max_length=32, blank=False)
-    IsShipped = models.BooleanField(default=False, blank=False)
-    Postcode = models.CharField(max_length=7, blank=False)
-    AddressLine1 = models.CharField(max_length=35, blank=False)
-    AddressLine2 = models.CharField(max_length=35, null=True, blank=True)
-    City = models.CharField(max_length=26, blank=False)
-    County = models.CharField(max_length=26, null=True, blank=True)
+    DateOfPlacement = models.DateField(blank=False, default=today)
+    PaymentMethod = models.CharField(max_length=32, blank=True, null=True)
+    IsCollected = models.BooleanField(default=False, blank=False)
+
+    # TODO Comment this
+    def getTotalPrice(self):
+        orderLines = OrderLine.objects.filter(OrderID=self)
+        totalPrice = 0
+        for orderLine in orderLines:
+            style = orderLine.StyleID
+            itemPrice = style.ItemID.Price
+            totalPrice += itemPrice * orderLine.Quantity
+        return totalPrice
 
 
 # The OrderLine model is used to record each item ordered per Order

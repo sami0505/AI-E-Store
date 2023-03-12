@@ -8,7 +8,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 from .forms import Register, Login, ResetRequest, Reset, ReviewForm
 from .accountActions import registerAccount, validateReview, formatRows
-from .models import TokenAction, Customer, Review, Item, Style  # Customer is used with TokenAction
+from .models import TokenAction, Customer, Review, Item, Style, Order, OrderLine  # Customer is used with TokenAction
 
 
 # This is the "front page" default view
@@ -43,6 +43,49 @@ def register(request):
         form = Register()
         context = {"form": form}
         return render(request, "registration.html", context)
+
+
+# This view is used to handle log in forms and the following actions to handle success
+def attempt_login(request):
+    if request.method == "POST":  # POST Request
+        status = True
+        userID = None  # Used for logs
+        form = Login(request.POST)
+
+        # Form processing
+        if form.is_valid():  # Form is valid
+            try:
+                user = authenticate(username=form.cleaned_data["Username"], password=form.cleaned_data["Password"])
+                if user is not None:  # Correct Credentials
+                    login(request, user)
+                    userID = user.CustomerID
+                else:  # Authentication Error
+                    raise Exception("Authentication Failed!")
+            except Exception as error:  # Something went wrong during login
+                status = False
+                print(f"An Error occurred: {error}")
+        else:  # Form is invalid
+            status = False
+            print("An Error occurred: Invalid Form")
+
+        # Status handling
+        if status:
+            return redirect("/")
+        else:
+            messages.error(request, "An error occurred with the login. Make sure your credentials are " +
+                           "correct and that your account is activated. Otherwise, try later.")
+            return redirect("/login/")
+        # TODO Logging
+    else:  # GET Request
+        form = Login()
+        context = {"form": form}
+        return render(request, "login.html", context)
+
+
+# This view is used to attempt a logout, even if the user isn't logged in
+def attempt_logout(request):
+    logout(request)
+    return redirect("/")
 
 
 # This view handles review placement.
@@ -126,49 +169,6 @@ def request_reset(request):
         return render(request, "resetrequest.html", context)
 
 
-# This view is used to handle log in forms and the following actions to handle success
-def attempt_login(request):
-    if request.method == "POST":  # POST Request
-        status = True
-        userID = None  # Used for logs
-        form = Login(request.POST)
-
-        # Form processing
-        if form.is_valid():  # Form is valid
-            try:
-                user = authenticate(username=form.cleaned_data["Username"], password=form.cleaned_data["Password"])
-                if user is not None:  # Correct Credentials
-                    login(request, user)
-                    userID = user.CustomerID
-                else:  # Authentication Error
-                    raise Exception("Authentication Failed!")
-            except Exception as error:  # Something went wrong during login
-                status = False
-                print(f"An Error occurred: {error}")
-        else:  # Form is invalid
-            status = False
-            print("An Error occurred: Invalid Form")
-
-        # Status handling
-        if status:
-            return redirect("/")
-        else:
-            messages.error(request, "An error occurred with the login. Make sure your credentials are " +
-                           "correct and that your account is activated. Otherwise, try later.")
-            return redirect("/login/")
-        # TODO Logging
-    else:  # GET Request
-        form = Login()
-        context = {"form": form}
-        return render(request, "login.html", context)
-
-
-# This view is used to attempt a logout, even if the user isn't logged in
-def attempt_logout(request):
-    logout(request)
-    return redirect("/")
-
-
 # This view acts as a form of request to delete an account
 def deletion(request):
     if request.user.is_authenticated:
@@ -181,6 +181,7 @@ def deletion(request):
         sender = settings.EMAIL_HOST_USER
         recipient = [request.user.email]
         send_mail(subject, message, sender, recipient)
+        # TODO log every time you send mail.
         return redirect("/")
     else:
         return HttpResponseNotFound("")  # 404 Error
@@ -221,6 +222,7 @@ def verification(request, token):
         if not status:  # Error occurred
             messages.error(request, "Something went wrong. Make sure the inputted email address is correct!")
             print(serverError)
+            # TODO log this error
         return redirect("/")
     else:  # GET
         context = {}
@@ -304,8 +306,7 @@ def detailed(request, itemID):
                 "reviews": reviews, "currentStyle": currentStyle, "isEligible": validity, "stars": meanRating}
         return render(request, "detailed.html", context)
     else:  # POST
-        # TODO handle this
-        pass
+        return redirect("/")
 
 
 # This view shows the user's profile data, also giving the option to delete the account
@@ -385,3 +386,80 @@ def removeFromWishlist(request, styleID):
         customer.wishlist = newWishlist
         customer.save()
     return redirect("/wishlist/")
+
+
+# The checkout view displays the final state of the order being placed.
+@login_required(login_url="login")
+def checkout(request):
+    customer = Customer.objects.get(pk=request.user.pk)
+    basket = customer.basket.split(",")
+    basket.remove("")
+
+    totalPrice = sum([Item.objects.get(pk=itemID).Price for itemID in basket])
+    styles = [Style.objects.get(pk=styleID) for styleID in basket]
+    itemLines = [f"{style.ItemID.Title}: {style.Size}-{style.Colour}" for style in styles]
+
+    context = {"user": request.user, "itemLines": itemLines, "totalPrice": totalPrice, "mediaURL": settings.MEDIA_ROOT}
+    return render(request, "checkout.html", context)
+
+
+# The reservation view converts a basket string to a valid order and then wipes the basket.
+@login_required(login_url="login")
+def reserve(request):
+    status = True
+    message = "Something went wrong. Try again later..."
+
+    # Attempt to process the reservation as a whole
+    try:
+        # Get user's basket
+        customer : Customer = Customer.objects.get(pk=request.user.pk)
+        basket = customer.basket.split(",")
+        basket.remove("")
+        
+        # Calculate quantities by the basket string
+        quantityDict = {styleID: 0 for styleID in set(basket)}
+        for styleID in basket:
+            quantityDict[styleID] += 1
+
+        # Initialise Order
+        newOrder = Order()
+        newOrder.CustomerID = customer
+        finalLines = []
+
+        # Attempt to create OrderLines
+        for styleID in quantityDict:
+            style = Style.objects.get(pk=styleID)
+            orderedQuantity = quantityDict[styleID]
+            if orderedQuantity <= style.Quantity and style.IsPublic:
+                currentOrderLine = OrderLine()
+                currentOrderLine.OrderID = newOrder
+                currentOrderLine.StyleID = style
+                currentOrderLine.Quantity = orderedQuantity
+                finalLines.append(currentOrderLine)
+            else:
+                # User ordered too much of an item or ordered valid item that isn't public
+                itemStyle = f"{style.ItemID.Title}: {style.Size}-{style.Colour}"
+                message = f"You ordered too much of {itemStyle}!! There isn't that much in stock!"
+                raise Exception("Incongruent items and order quantity.")
+            
+    # Something went wrong
+    except Exception as error:
+        # TODO error log 
+        status = False
+        print(f"An Error occurred: {error}")
+        messages.error(request, message)
+    finally:
+        # Finally, if everything went correctly, save all the changes to the database
+        if status:
+            newOrder.save()
+            for orderLine in finalLines:
+                style = orderLine.StyleID
+                style.Quantity -= orderLine.Quantity
+                style.AmountSold += orderLine.Quantity
+                orderLine.save()
+                style.save()
+            customer.basket = ""  # Wipe the basket 
+            customer.save()
+            messages.success(request, "Order has been successfully placed!")
+        # TODO log transaction log
+        return redirect("/")

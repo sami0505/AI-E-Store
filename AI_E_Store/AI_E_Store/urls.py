@@ -22,6 +22,8 @@ urlpatterns = [
     path('wishlist/', views.wishlist, name="wishlist"),
     path('addtowishlist/<int:styleID>', views.addToWishlist, name="addToWishlist"),
     path('removefromwishlist/<int:styleID>', views.removeFromWishlist, name="removeFromWishlist"),
+    path('checkout/', views.checkout, name='checkout'),
+    path('reserve/', views.reserve, name='reserve'),
     path('admin/', admin.site.urls),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -395,7 +395,7 @@ def checkout(request):
     basket = customer.basket.split(",")
     basket.remove("")
 
-    totalPrice = sum([Item.objects.get(pk=itemID).Price for itemID in basket])
+    totalPrice = sum([Style.objects.get(pk=styleID).ItemID.Price for styleID in basket])
     styles = [Style.objects.get(pk=styleID) for styleID in basket]
     itemLines = [f"{style.ItemID.Title}: {style.Size}-{style.Colour}" for style in styles]
 

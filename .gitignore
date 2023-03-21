@@ -10,3 +10,5 @@ AI_Model/ratings.pickle
 AI_Model/ratingsOld.pickle
 *.png
 *.jpg
+*.webp
+*.jfif

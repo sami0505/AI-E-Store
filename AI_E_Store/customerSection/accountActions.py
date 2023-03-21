@@ -104,6 +104,7 @@ def generateFeatured():
             newFeatured = FeaturedItems()
             newFeatured.writeItems(featuredItems)
             newFeatured.save()
+
         except Exception as error:
             # Something went wrong, likely invalid date for featuredRecord
             if featuredDate.weekday() != 0:
@@ -120,10 +121,10 @@ def generateFeatured():
                 newFeatured.writeItems(featuredItems)
                 newFeatured.save()
         else:
-            # Successfully recalculated QBRs without any errors
+            # Successfully recalculated QBRs and Generated new featured Items.
             print("Successfully Recalibrated QBRs")
-            newFeatured.save()
-    else:
+            
+    else:  # It's either not a monday, or there are not enough items.
         if len(items) < 8:
             # There are not enough items
             print("There are not enough items to make a featured list!")

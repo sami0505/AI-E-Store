@@ -25,7 +25,7 @@ def registerAccount(form):
         pass
         # TODO Log transaction
 
-# TODO Comment this
+# This is the procedure that is used to generate the featured items
 def generateFeatured():
     items = Item.objects.all()
     if date.today().weekday() == 5 and len(items) >= 8:
@@ -66,7 +66,7 @@ def generateFeatured():
                     itemsDict[itemInstance.ItemInstanceID] = itemInstance.QBR
             itemsDict = sorted(itemsDict.items(), key=itemsDict.get(), reverse=True)
 
-            # Highest QBR
+            # Generate 4 Items: Highest QBR
             for i in range(0, 4):
                 featuredInstance = ItemInstance.objects.get(pk=list(itemsDict)[i])
                 instancesToRemove = ItemInstance.objects.filter(ItemID=featuredInstance.ItemID)
@@ -74,7 +74,7 @@ def generateFeatured():
                     del itemsDict[instance]
                 featuredItems.append(featuredInstance)
 
-            # notFeatured OR 5th / 6th highest QBR
+            # Generate 2 Items: notFeatured OR 5th / 6th highest QBR
             for i in range(0,2):
                 if not neverFeatured:
                     # There are no items are haven't been featured
@@ -87,7 +87,7 @@ def generateFeatured():
                     del itemsDict[instance]
                 featuredItems.append(featuredInstance)
 
-            # notFeatured OR randomItem
+            # Generate 2 Items: notFeatured OR randomItem
             for i in range(0, 2):
                 if not neverFeatured:
                     # There are no items are haven't been featured
@@ -95,26 +95,38 @@ def generateFeatured():
                     featuredInstance = ItemInstance.objects.get(pk=randomInstanceID)
                 else:
                     featuredInstance = neverFeatured.pop()
-
+                    
                 instancesToRemove = ItemInstance.objects.filter(ItemID=featuredInstance.ItemID)
                 for instance in instancesToRemove:
                     del itemsDict[instance]
                 featuredItems.append(featuredInstance)
-            
+
+            newFeatured = FeaturedItems()
+            newFeatured.writeItems(featuredItems)
+            newFeatured.save()
         except Exception as error:
             # Something went wrong, likely invalid date for featuredRecord
-            if len(items) < 8:
-                # There are not enough items
-                print("There are not enough items to make a new featured list!")
-            elif featuredDate.weekday() == 0:
-                # The "Invalid" featuredDate is a monday, which means that this is likely the first run.
-                randomInstanceID = list(itemsDict)[random.randint(0, len(itemsDict))]
-                featuredInstance = ItemInstance.objects.get(pk=randomInstanceID)
-            else:
+            if featuredDate.weekday() != 0:
                 # Something else went wrong.
                 print(f"An Error occurred: {error}")
+            else:
+                # The "Invalid" featuredDate is a monday, which means that this is likely the first run.
+                featuredItems = []
+                for i in range(0,8):  # Generate random featured items
+                    randomInstanceID = list(itemsDict)[random.randint(0, len(itemsDict))]
+                    featuredInstance = ItemInstance.objects.get(pk=randomInstanceID)
+                    featuredItems.append(featuredInstance)
+                newFeatured = FeaturedItems()
+                newFeatured.writeItems(featuredItems)
+                newFeatured.save()
         else:
             # Successfully recalculated QBRs without any errors
             print("Successfully Recalibrated QBRs")
+            newFeatured.save()
     else:
-        print("It's not a monday yet! Wait for it.")
+        if len(items) < 8:
+            # There are not enough items
+            print("There are not enough items to make a featured list!")
+        else:
+            # It's not a monday
+            print("It's not a monday yet! Wait for it.")

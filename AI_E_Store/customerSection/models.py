@@ -51,7 +51,7 @@ class ItemInstance(models.Model):
     QBR = models.DecimalField(default=-1.0, max_digits=3, decimal_places=2, blank=False)
 
 
-# TODO comment me pls
+# This model contains a recorded "generation" of the featured items
 class FeaturedItems(models.Model):
     DateUsed = models.DateField(primary_key=True, default=timezone.now().date)
     Item1 = models.ForeignKey("ItemInstance", on_delete=models.CASCADE, db_column="", blank=False, related_name="ItemNo1")
@@ -63,7 +63,20 @@ class FeaturedItems(models.Model):
     Item7 = models.ForeignKey("ItemInstance", on_delete=models.CASCADE, db_column="", blank=False, related_name="ItemNo7")
     Item8 = models.ForeignKey("ItemInstance", on_delete=models.CASCADE, db_column="", blank=False, related_name="ItemNo8")
 
-    # TODO comment pls
+    # This function returns the items featured that day
+    def writeItems(self, itemsGiven):
+        if len(itemsGiven) == 8:
+            self.Item1=itemsGiven[0]
+            self.Item2=itemsGiven[1]
+            self.Item3=itemsGiven[2]
+            self.Item4=itemsGiven[3]
+            self.Item5=itemsGiven[4]
+            self.Item6=itemsGiven[5]
+            self.Item7=itemsGiven[6]
+            self.Item8=itemsGiven[7]
+        else:
+            raise Exception("The list given for the items written is of an incorrect length.")
+
     def returnItems(self):
         itemList = []
         itemList.append(self.Item1)

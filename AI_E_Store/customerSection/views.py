@@ -415,7 +415,9 @@ def reserve(request):
         customer : Customer = Customer.objects.get(pk=request.user.pk)
         basket = customer.basket.split(",")
         basket.remove("")
-        
+        if not basket:
+            message = "You can't order nothing!"
+            raise Exception("The basket given is empty!")
         # Calculate quantities by the basket string
         quantityDict = {styleID: 0 for styleID in set(basket)}
         for styleID in basket:

@@ -23,13 +23,11 @@ def registerAccount(form):
         send_mail(subject, message, sender, recipient)
     except Exception as error:
         status = False
-        # TODO Log error
         return error
     else:
         return None
     finally:
         pass
-        # TODO Log transaction
 
 
 def validateReview(user, item):

@@ -1,4 +1,5 @@
 from django import forms
+from django.utils import timezone
 
 # This defines the dropdown
 # first value is actual value
@@ -20,8 +21,7 @@ class Register(forms.Form):
     Telephone = forms.CharField(max_length=11)
     Username = forms.CharField(max_length=16)
     Password = forms.CharField(max_length=60, widget=forms.PasswordInput())
-    DateOfBirth = forms.DateField(label="Date Of Birth:")
-
+    DateOfBirth = forms.DateField(label="Date Of Birth:", widget=forms.SelectDateWidget(years=range(1900, timezone.now().year)))
 
 class Login(forms.Form):
     Username = forms.CharField(max_length=16)

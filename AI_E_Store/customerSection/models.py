@@ -137,7 +137,7 @@ class Order(models.Model):
     PaymentMethod = models.CharField(max_length=32, blank=True, null=True)
     IsCollected = models.BooleanField(default=False, blank=False)
 
-    # TODO Comment this
+    # This function returns the total payment of an order. This allows for easy display.
     def getTotalPrice(self):
         orderLines = OrderLine.objects.filter(OrderID=self)
         totalPrice = 0
@@ -201,7 +201,3 @@ class TokenAction(models.Model):
             return int(userID)
         else:  # Wrong reason
             return -1
-
-    def logAction(self):
-        # TODO add logs
-        pass

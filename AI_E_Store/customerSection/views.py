@@ -75,7 +75,6 @@ def attempt_login(request):
             messages.error(request, "An error occurred with the login. Make sure your credentials are " +
                            "correct and that your account is activated. Otherwise, try later.")
             return redirect("/login/")
-        # TODO Logging
     else:  # GET Request
         form = Login()
         context = {"form": form}
@@ -124,7 +123,6 @@ def review(request):
             messages.error(request, clientError)
             print(f"An Error occurred: {serverError}")
             return redirect("/review/")
-        # TODO Add logging
     else:  # GET
         form = ReviewForm()
         context = {"form": form}
@@ -181,7 +179,6 @@ def deletion(request):
         sender = settings.EMAIL_HOST_USER
         recipient = [request.user.email]
         send_mail(subject, message, sender, recipient)
-        # TODO log every time you send mail.
         return redirect("/")
     else:
         return HttpResponseNotFound("")  # 404 Error
@@ -212,7 +209,6 @@ def verification(request, token):
                 exec(action)
                 currentToken.delete()
                 messages.success(request, "Your password has been successfully reset!")
-                # TODO Use Logging
             else:  # Invalid Email
                 status = False
                 serverError = "The referenced account doesn't exist or isn't the correct user."
@@ -222,7 +218,6 @@ def verification(request, token):
         if not status:  # Error occurred
             messages.error(request, "Something went wrong. Make sure the inputted email address is correct!")
             print(serverError)
-            # TODO log this error
         return redirect("/")
     else:  # GET
         context = {}
@@ -446,7 +441,6 @@ def reserve(request):
             
     # Something went wrong
     except Exception as error:
-        # TODO error log 
         status = False
         print(f"An Error occurred: {error}")
         messages.error(request, message)
@@ -463,5 +457,4 @@ def reserve(request):
             customer.basket = ""  # Wipe the basket 
             customer.save()
             messages.success(request, "Order has been successfully placed!")
-        # TODO log transaction log
         return redirect("/")

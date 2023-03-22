@@ -60,7 +60,7 @@ class Item(models.Model):
             return mean
         else:
             return 0
-
+        
 
 # The Style model contains the highly specific info per "style" of an item. Blue, Red, Small, Big etc
 class Style(models.Model):
@@ -73,6 +73,47 @@ class Style(models.Model):
     IsPublic = models.BooleanField(blank=False)
     HighResImg = models.ImageField()
     QBR = models.DecimalField(default=-1.0, max_digits=3, decimal_places=2, blank=False)
+
+
+# This model contains a recorded "generation" of the featured items
+class FeaturedItems(models.Model):
+    DateUsed = models.DateField(primary_key=True, default=timezone.now().date)
+    Item1 = models.ForeignKey("Style", on_delete=models.CASCADE, db_column="", blank=False, related_name="ItemNo1")
+    Item2 = models.ForeignKey("Style", on_delete=models.CASCADE, db_column="", blank=False, related_name="ItemNo2")
+    Item3 = models.ForeignKey("Style", on_delete=models.CASCADE, db_column="", blank=False, related_name="ItemNo3")
+    Item4 = models.ForeignKey("Style", on_delete=models.CASCADE, db_column="", blank=False, related_name="ItemNo4")
+    Item5 = models.ForeignKey("Style", on_delete=models.CASCADE, db_column="", blank=False, related_name="ItemNo5")
+    Item6 = models.ForeignKey("Style", on_delete=models.CASCADE, db_column="", blank=False, related_name="ItemNo6")
+    Item7 = models.ForeignKey("Style", on_delete=models.CASCADE, db_column="", blank=False, related_name="ItemNo7")
+    Item8 = models.ForeignKey("Style", on_delete=models.CASCADE, db_column="", blank=False, related_name="ItemNo8")
+
+    # This function writes the items of the given list to the fields of this generation of featured
+    def writeItems(self, itemsGiven):
+        if len(itemsGiven) == 8:
+            self.Item1=itemsGiven[0]
+            self.Item2=itemsGiven[1]
+            self.Item3=itemsGiven[2]
+            self.Item4=itemsGiven[3]
+            self.Item5=itemsGiven[4]
+            self.Item6=itemsGiven[5]
+            self.Item7=itemsGiven[6]
+            self.Item8=itemsGiven[7]
+        else:
+            raise Exception("The list given for the items written is of an incorrect length.")
+
+    # This function returns the items of the current featured items
+    def returnItems(self):
+        itemList = []
+        itemList.append(self.Item1)
+        itemList.append(self.Item2)
+        itemList.append(self.Item3)
+        itemList.append(self.Item4)
+        itemList.append(self.Item5)
+        itemList.append(self.Item6)
+        itemList.append(self.Item7)
+        itemList.append(self.Item8)
+        return itemList
+
 
 # The Review model is a singular record of a user's review
 class Review(models.Model):

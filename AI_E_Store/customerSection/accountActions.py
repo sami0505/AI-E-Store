@@ -1,4 +1,4 @@
-from .models import Customer, TokenAction, Item, OrderLine, Review
+from .models import Customer, TokenAction, Item, Style, OrderLine, Review, FeaturedItems
 from django.conf import settings
 from django.core.mail import send_mail
 from django.utils import timezone
@@ -108,7 +108,7 @@ def generateFeatured():
             preFeatured = featuredRecord.returnItems()
 
             for item in preFeatured:  # Recalculate QBR for each item featured last week
-                orderLines = OrderLine.objects.filter(ItemInstanceID=item, OrderID__DateOfSale__gte=featuredDate, OrderID__DateOfSale__lt=timezone.now().date())
+                orderLines = OrderLine.objects.filter(StyleID=item, OrderID__DateOfSale__gte=featuredDate, OrderID__DateOfSale__lt=timezone.now().date())
                 QBF = len(orderLines)
                 allFeatured = FeaturedItems.objects.all()
                 dateNotFeatured = None
@@ -124,7 +124,7 @@ def generateFeatured():
                     QBR = -1
                 else:
                     # The date where the item is not featured was found.
-                    orderLines = OrderLine.objects.filter(ItemInstanceID=item, OrderID__DateOfSale__gte=dateNotFeatured, OrderID__DateOfSale__lt=(dateNotFeatured + timedelta(days=7)))
+                    orderLines = OrderLine.objects.filter(StyleID=item, OrderID__DateOfSale__gte=dateNotFeatured, OrderID__DateOfSale__lt=(dateNotFeatured + timedelta(days=7)))
                     QBU = len(orderLines)
                     QBR = QBF / QBU
                     item.QBR = QBR
@@ -132,47 +132,47 @@ def generateFeatured():
 
             # Generate the new featured items
             featuredItems = []
-            neverFeatured = [itemInstance for itemInstance in itemInstance.objects.filter(QBR__lt=0)]
+            neverFeatured = [style for style in Style.objects.filter(QBR__lt=0)]
             itemsDict = {}
-            for itemInstance in ItemInstance.objects.all():
-                if itemInstance.QBR > 0:
-                    itemsDict[itemInstance.ItemInstanceID] = itemInstance.QBR
+            for style in Style.objects.all():
+                if style.QBR > 0:
+                    itemsDict[style.StyleID] = style.QBR
             itemsDict = sorted(itemsDict.items(), key=itemsDict.get(), reverse=True)
 
             # Generate 4 Items: Highest QBR
             for i in range(0, 4):
-                featuredInstance = ItemInstance.objects.get(pk=list(itemsDict)[i])
-                instancesToRemove = ItemInstance.objects.filter(ItemID=featuredInstance.ItemID)
-                for instance in instancesToRemove:
-                    del itemsDict[instance]
-                featuredItems.append(featuredInstance)
+                featuredStyle = Style.objects.get(pk=list(itemsDict)[i])
+                stylesToRemove = featuredStyle.ItemID.getStyles()
+                for style in stylesToRemove:
+                    del itemsDict[style]
+                featuredItems.append(featuredStyle)
 
             # Generate 2 Items: notFeatured OR 5th / 6th highest QBR
             for i in range(0,2):
                 if not neverFeatured:
                     # There are no items are haven't been featured
-                    featuredInstance = ItemInstance.objects.get(pk=list(itemsDict)[i])
+                    featuredStyle = Style.objects.get(pk=list(itemsDict)[i])
                 else:
-                    featuredInstance = neverFeatured.pop()
+                    featuredStyle = neverFeatured.pop()
 
-                instancesToRemove = ItemInstance.objects.filter(ItemID=featuredInstance.ItemID)
-                for instance in instancesToRemove:
-                    del itemsDict[instance]
-                featuredItems.append(featuredInstance)
+                stylesToRemove = featuredStyle.ItemID.getStyles()
+                for style in stylesToRemove:
+                    del itemsDict[style]
+                featuredItems.append(featuredStyle)
 
             # Generate 2 Items: notFeatured OR randomItem
             for i in range(0, 2):
                 if not neverFeatured:
                     # There are no items are haven't been featured
-                    randomInstanceID = list(itemsDict)[random.randint(0, len(itemsDict))]
-                    featuredInstance = ItemInstance.objects.get(pk=randomInstanceID)
+                    randomStyleID = list(itemsDict)[random.randint(0, len(itemsDict))]
+                    featuredStyle = Style.objects.get(pk=randomStyleID)
                 else:
-                    featuredInstance = neverFeatured.pop()
+                    featuredStyle = neverFeatured.pop()
                     
-                instancesToRemove = ItemInstance.objects.filter(ItemID=featuredInstance.ItemID)
-                for instance in instancesToRemove:
-                    del itemsDict[instance]
-                featuredItems.append(featuredInstance)
+                stylesToRemove = featuredStyle.ItemID.getStyles()
+                for style in stylesToRemove:
+                    del itemsDict[style]
+                featuredItems.append(featuredStyle)
 
             newFeatured = FeaturedItems()
             newFeatured.writeItems(featuredItems)
@@ -187,9 +187,9 @@ def generateFeatured():
                 # The "Invalid" featuredDate is a monday, which means that this is likely the first run.
                 featuredItems = []
                 for i in range(0,8):  # Generate random featured items
-                    randomInstanceID = list(itemsDict)[random.randint(0, len(itemsDict))]
-                    featuredInstance = ItemInstance.objects.get(pk=randomInstanceID)
-                    featuredItems.append(featuredInstance)
+                    randomStyleID = list(itemsDict)[random.randint(0, len(itemsDict))]
+                    featuredStyle = Style.objects.get(pk=randomStyleID)
+                    featuredItems.append(featuredStyle)
                 newFeatured = FeaturedItems()
                 newFeatured.writeItems(featuredItems)
                 newFeatured.save()
